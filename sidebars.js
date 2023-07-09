@@ -21,8 +21,8 @@ const sidebars = {
   tutorialSidebar: [
     {
       type: 'category',
-      label: 'Python',
-      items: ['python/using-under-score']
+      label: 'pyATS',
+      items: ['config-pyats-environment/config-pyats']
     },    
     {
       type: 'category',
