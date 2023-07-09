@@ -19,18 +19,15 @@ const sidebars = {
   // But you can create a sidebar manually
 
   tutorialSidebar: [
-    'intro',
-    'hello',
-    'new_v2',
     {
       type: 'category',
-      label: 'Tutorial Basics',
-      items: ['tutorial-basics/create-a-document', 'tutorial-basics/create-a-page'],
+      label: 'Python',
+      items: ['python/using-under-score']
     },    
     {
       type: 'category',
-      label: 'Tutorial Extras',
-      items: ['tutorial-extras/manage-docs-versions', 'tutorial-extras/translate-your-site'],
+      label: 'Networking',
+      items: ['networking/cisco-devices'],
     },
   ],
 
