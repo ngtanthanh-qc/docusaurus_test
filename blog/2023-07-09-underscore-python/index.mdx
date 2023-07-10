@@ -6,13 +6,11 @@ tags: [python, underscore, tips]
 ---
 
 export const Centered = ({ children }) => (
-  <div style={{ textAlign: 'justify' }}>
-    {children}
-  </div>
+  <div style={{ textAlign: "justify" }}>{children}</div>
 );
 
-
 1. Last used value in python console
+
 ```bash
 >>> 10 + 10
 20
@@ -21,17 +19,20 @@ export const Centered = ({ children }) => (
 ```
 
 2. Make number more readable
+
 ```python
 number: int = 1_000_000
 ```
 
 3. Unimportant values
+
 ```python
 for _ in range(3):
     print('hello')
 ```
 
 4. Unimportant exception
+
 ```python
 try:
   result = 1/0
@@ -40,6 +41,7 @@ except ZeroDivisionError as _:
 ```
 
 5. Unpacking
+
 ```python
 sample_tuple = (1,2,3,4)
 a, _, b, _ = sample_tuple
@@ -47,6 +49,7 @@ print(a,b) # 1, 3
 ```
 
 6. Super Unpacking
+
 ```python
 sample_tuple = (1, 2, 3, 4, 5)
 a, *_, b = sample_tuple
@@ -54,6 +57,7 @@ print(a, b)  #1, 5
 ```
 
 7. protected
+
 ```python
 from uuid import uuid4
 class User:
@@ -68,6 +72,7 @@ user._get_id()
 ```
 
 8. Private
+
 ```python
 def __init__(self):
     self.__id = uuid4()
@@ -76,19 +81,21 @@ def __get_id(self):
 ```
 
 9. Reserved names
-```python
-if_ = 10 
+
+```py
+if_ = 10
 class_ = "class"
 str_ = "str"
 ```
 
 10. dundor method
-```python
+
+```py
 class Fruit:
-    def __init__(self):
-        self.id = uuid4()
-    def __str__(self):
-        return f"Fruit: {self.id}"
+  def __init__(self):
+      self.id = uuid4()
+  def __str__(self):
+      return f"Fruit: {self.id}"
 fruit = Fruit()
 print(fruit)
 >>> Fruit: 6075f5a9-24bf-4df3-b1ba-3fea2100dd4d
