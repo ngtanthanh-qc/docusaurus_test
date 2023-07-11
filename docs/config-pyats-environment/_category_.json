@@ -1,8 +1,8 @@
 {
-  "label": "pyATS",
+  "label": "Networking Automation",
   "position": 1,
   "link": {
     "type": "generated-index",
-    "description": "Configurations for pyATS"
+    "description": "Build environment for networking automation",
   }
 }

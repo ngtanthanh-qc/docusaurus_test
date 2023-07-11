@@ -1,0 +1,41 @@
+---
+sidebar_position: 3
+sidebar_label: Python Style Guide
+
+---
+
+# Apply Python Style Guide 
+[Follow Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
+
+### Peak examples
+
+<details>
+  <summary>Parentheses</summary>
+  <div>
+    <pre><code>
+    {`Yes: if foo:
+         bar()
+     while x:
+         x = bar()
+     if x and y:
+         bar()
+     if not x:
+         bar()
+     # For a 1 item tuple the ()s are more visually obvious than the comma.
+     onesie = (foo,)
+     return foo
+     return spam, beans
+     return (spam, beans)
+     for (x, y) in dict.items(): ...`}
+    </code></pre>
+    <br />
+    <pre><code>
+    {`No:  if (x):
+         bar()
+     if not(x):
+         bar()
+     return (foo)
+    `}
+    </code></pre>
+  </div>
+</details>
