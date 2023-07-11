@@ -1,13 +1,93 @@
 ---
 sidebar_position: 3
 sidebar_label: Python Style Guide
-
 ---
 
-# Apply Python Style Guide 
-[Follow Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
+# Python Style Guide References
+- [Complete Google Python Guide](https://google.github.io/styleguide/pyguide.html)
 
-### Peak examples
+## Peak examples
+<details>
+<summary>Naming from Guido's Recommendations</summary>
+<div>
+<table rules="all" border="1" summary="Guidelines from Guido's Recommendations"
+       cellspacing="2" cellpadding="2">
+
+  <tr>
+    <th>Type</th>
+    <th>Public</th>
+    <th>Internal</th>
+  </tr>
+
+  <tr>
+    <td>Packages</td>
+    <td><code>lower_with_under</code></td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>Modules</td>
+    <td><code>lower_with_under</code></td>
+    <td><code>_lower_with_under</code></td>
+  </tr>
+
+  <tr>
+    <td>Classes</td>
+    <td><code>CapWords</code></td>
+    <td><code>_CapWords</code></td>
+  </tr>
+
+  <tr>
+    <td>Exceptions</td>
+    <td><code>CapWords</code></td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>Functions</td>
+    <td><code>lower_with_under()</code></td>
+    <td><code>_lower_with_under()</code></td>
+  </tr>
+
+  <tr>
+    <td>Global/Class Constants</td>
+    <td><code>CAPS_WITH_UNDER</code></td>
+    <td><code>_CAPS_WITH_UNDER</code></td>
+  </tr>
+
+  <tr>
+    <td>Global/Class Variables</td>
+    <td><code>lower_with_under</code></td>
+    <td><code>_lower_with_under</code></td>
+  </tr>
+
+  <tr>
+    <td>Instance Variables</td>
+    <td><code>lower_with_under</code></td>
+    <td><code>_lower_with_under</code> (protected)</td>
+  </tr>
+
+  <tr>
+    <td>Method Names</td>
+    <td><code>lower_with_under()</code></td>
+    <td><code>_lower_with_under()</code> (protected)</td>
+  </tr>
+
+  <tr>
+    <td>Function/Method Parameters</td>
+    <td><code>lower_with_under</code></td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>Local Variables</td>
+    <td><code>lower_with_under</code></td>
+    <td></td>
+  </tr>
+</table>
+</div>
+</details>
+
 
 <details>
   <summary>Parentheses</summary>
@@ -39,3 +119,21 @@ sidebar_label: Python Style Guide
     </code></pre>
   </div>
 </details>
+
+```py showLineNumbers
+from collections.abc import Callable
+from typing import ParamSpec, TypeVar
+_P = ParamSpec("_P")
+_T = TypeVar("_T")
+...
+def next(l: list[_T]) -> _T:
+  return l.pop()
+
+def print_when_called(f: Callable[_P, _T]) -> Callable[_P, _T]:
+  # highlight-next-line
+  def inner(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+    print("Function was called")
+    # This will error
+    return f(*args, **kwargs)
+  return inner
+```

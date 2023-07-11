@@ -1,0 +1,8 @@
+{
+  "label": "SDA",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Everything relate to SDA",
+  }
+}
