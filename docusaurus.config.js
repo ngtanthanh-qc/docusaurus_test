@@ -151,13 +151,13 @@ const config = {
         darkTheme: darkCodeTheme,
         magicComments: [
           {
-            className: 'theme-code-block-highlighted-line',
-            line: 'highlight-next-line',
-            block: {start: 'highlight-start', end: 'highlight-end'},
+            className: "theme-code-block-highlighted-line",
+            line: "highlight-next-line",
+            block: { start: "highlight-start", end: "highlight-end" },
           },
           {
-            className: 'code-block-error-line',
-            line: 'This will error',
+            className: "code-block-error-line",
+            line: "This will error",
           },
         ],
       },
@@ -174,5 +174,14 @@ const config = {
         },
       },
     }),
+  plugins: [
+    [
+      "docusaurus-plugin-dotenv",
+      {
+        path: "./.env.local",
+        systemvars: true,
+      },
+    ],
+  ],
 };
 module.exports = config;
