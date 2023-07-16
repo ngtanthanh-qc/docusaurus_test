@@ -182,6 +182,13 @@ const config = {
         systemvars: true,
       },
     ],
+    [
+      '@docusaurus/plugin-google-gtag',
+      {
+        trackingID: 'G-0RYVLZ03TQ',
+        anonymizeIP: true,
+      },
+    ],
   ],
 };
 module.exports = config;
