@@ -189,6 +189,12 @@ const config = {
         anonymizeIP: true,
       },
     ],
+    [
+      '@docusaurus/plugin-google-tag-manager',
+      {
+        containerId: 'GTM-W4JDZ33',
+      },
+    ],
   ],
 };
 module.exports = config;
