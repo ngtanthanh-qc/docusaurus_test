@@ -1,0 +1,525 @@
+---
+sidebar_position: 2
+title: Configuring 802.1X Authentication
+description: To successfully deploy IEEE 802.1X for Cisco secure network access, you must configure the supplicant, authenticator, and authentication server for 802.1X operation.
+# slug: /internal/networking/confguring_802_1x_authen
+tags:
+  - cisco
+  - 802.1x
+  - authentication
+  - radius
+---
+
+import Highlight from '@site/src/components/Highlight.js';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
+
+:::caution
+I've only covered what I observed, so please refer to the complete guide for more information.
+You can find it at:
+  - [Security Design](https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Education/SchoolsSRA_DG/SchoolsSRA-DG/SchoolsSRA_chap4.html)
+  - Cisco U.
+:::
+
+## Introduction
+
+The Institute of Electrical and Electronics Engineers (IEEE) 802.1X standard was created to provide strong Layer 2 edge network authentication and authorization to secure wired and wireless networks. To successfully deploy IEEE 802.1X for Cisco secure network access, you must configure the supplicant, authenticator, and authentication server for 802.1X operation.
+
+This article will cover steps to configure 802.1X on:
+
+- Cisco Catalyst Switch: an 802.1X authenticator for wired users and devices
+- Cisco Wireless LAN Controller: an 802.1X authenticator for wireless users and devices
+- Cisco ISE: the RADIUS authentication and authorization server
+- 802.1X Endpoint: a Cisco AnyConnect NAM or Native OS supplicant
+
+## Cisco Catalyst Switch 802.1X Configuration
+You can use a phased approach when deploying 802.1X. This phased approach helps you to determine the potential impact to devices, adjust policy enforcement over time, and ensure a smooth transition to identity-based policy services.
+
+You can use these 802.1X deployment modes:
+
+- **Monitor (open) mode**: Allows you to enable authentication across the wired infrastructure, without affecting wired users or devices. It can be thought of as an audit mode. With the help of logging data for validation, administrators use the monitor mode to help ensure that all devices are authenticating correctly, either with 802.1X or MAB. If a device is misconfigured or is missing an 802.1X supplicant, access will be allowed and logged. However, if authentication succeeds, authorization (for example, Dynamic VLAN, downloadable access control list (dACL)) can still be applied.
+
+- **Low-impact mode**: It allows selective transition from an open (nonfiltering) preauthorization method to selective preauthorization. This function is provided by static port ACLs (Pre-ACL as shown in the previous figure) that allow necessary services such as Dynamic Host Configuration Protocol (DHCP) and Domain Name System (DNS) while blocking all other network access. Users connected to controlled ports will receive additional access (based on policy) after successful authentication, based on the dACL that will override the static ACL on the port.
+
+- **High-security (closed) mode**: It provides the highest level of control by configuring the closed preauthorization port control. No traffic will be permitted on a port except Extensible Authentication Protocol over LAN (EAPOL) before authentication and authorization.
+
+
+### 802.1X Phased Deployment Modes
+
+#### Monitor Mode
+In the monitor mode, the open access feature allows end user access, regardless of authentication results. Thus, the 802.1X, MAB, or web authentication deployment has no effect on user access. 802.1X-enabled ports do not block traffic before successful authentication and authorization, as they would normally. This feature allows you to create an initial Cisco ISE deployment and learn about your network without having to worry about blocking access unintentionally.
+
+:::note
+The monitor mode is like placing a security camera at the door to monitor and record port access behavior. You can enable RADIUS accounting to log authentication attempts. You gain visibility on who and what is connecting to your network with an audit trail.
+:::
+
+In the monitor mode, you can discover the following:
+
+- Which endpoints connect to your network, such as PCs, printers, and cameras.
+- Where these endpoints connect to the network (switch, port).
+- Whether they are 802.1X-capable or not.
+- Whether they have valid credentials.
+- In the event of failed MAB attempts, whether the endpoints have known, valid MAC addresses.
+
+#### Low-Impact Mode
+
+The low-impact mode allows you to incrementally increase your security. You may have previously configured ports for open mode to gain insight into the network and endpoint usage. Now you can configure these open ports with a preauthentication ACL and permit only basic connectivity for unauthenticated hosts.
+
+For example, unauthenticated users may be able to use DHCP, DNS, and perhaps get to the Internet without gaining access to all internal resources.
+
+After successful authentication, the Cisco ISE authentication server sends a DACL to override any existing port ACL. This action provides differentiated access for authenticated users.
+
+#### Closed Mode
+
+The last option for 802.1X-enabled switch ports involves strict use of the traditional, closed mode, along with differentiated access, which could be dynamic VLAN assignment, DACLs, or another authorization mechanism. Formerly known as the high-security mode, it allows only Extensible Authentication Protocol over LAN (EAPOL) traffic until the authentication process completes, which is the default behavior of an 802.1X- enabled switch port. EAP is the message format and framework defined by RFC 4187 that provides a way for the supplicant and the authenticator to negotiate an authentication method (the EAP method). EAP over LAN (EAPoL) is the encapsulation defined by 802.1X for the transport of the EAP from the supplicant to the switch.
+
+#### 802.1X Fallback Options
+
+Even though IEEE 802.1X supplicant support on user's devices is ubiquitous, either coming directly from the operating system vendor as a preinstalled package or as a third-party add-on, there are always some devices that either do not have the supplicant installed or supported. Such non-supplicant devices can come in the form of wired or wireless devices, such as laptops, printers, IP cameras, tablets, and other mobile devices.
+
+There are also some users that bring their own laptops or mobile devices into a network and those devices are usually not configured with the supplicant or do not have correct credentials to authenticate. Sometimes, the device lacks 802.1X support altogether.
+
+Quite often, you also need to consider devices belonging to visiting users that may have the 802.1X supplicant configured but lack local credentials to authenticate inside your network. Such devices will initiate 802.1X authentication but will fail the authentication because of invalid credentials.
+
+In that case, you need to configure some kind of a fallback mechanism in an 802.1X enabled network that will allow connectivity from such devices to the network. Here are the available mechanisms:
+
+- MAB
+- Guest VLAN
+- Authentication fail VLAN
+- Central Web Authentication (CWA) with Cisco ISE
+
+Some of the methods listed above are mutually exclusive. It is your task to decide which mechanisms you will use during the design process of an 802.1X deployment.
+
+### MAC Authentication Bypass (MAB)
+
+MAB uses a MAC address for both the username and password. This authentication is the most basic form of authentication in deployments because many devices either do not, or cannot, support 802.1X. Because MAC addresses are easily spoofed, they are a relatively weak form of authentication, but they are a good first step for device identification. It is very common to use MAB as an 802.1X fallback mechanism to authenticate simple devices, such as printer, IP cameras, or physical access control mechanisms, such as card readers.
+
+The figure illustrates a high-level functional sequence when MAB is configured as a fallback mechanism to 802.1X. If 802.1X is not enabled, the sequence is the same except that MAB starts immediately after link-up, instead of waiting for IEEE 802.1X to time out.
+
+As you can see from the figure, there are four phases:
+
+Phase 1: Initiation
+
+Phase 2: MAC Address Learning
+
+Phase 3: Authorization
+
+Phase 4: Accounting
+
+Phase 1, Initiation: From the switch’s perspective, authentication begins when the switch detects link-up on a port. The switch initiates authentication by sending an EAP Request-Identity message to the endpoint. If the switch does not receive a response, it retransmits the request at periodic intervals. If no response is received after the maximum number of retries, the switch lets IEEE 802.1X time out and proceeds to MAB, if configured.
+
+Phase 2, MAC Address Learning: During the MAC address learning stage, the switch begins MAB by opening the port to accept a single packet. The switch will then learn the source MAC address of the endpoint. Packets that are sent before the port has fallen back to MAB (that is, during the IEEE 802.1X timeout phase) are discarded immediately. They cannot be used to learn the MAC address. The switch can use almost any Layer 2 and Layer 3 packets to learn MAC addresses. The exception are frames such as Cisco Discovery Protocol, Link Layer Discovery Protocol (LLDP), Spanning Tree Protocol (STP), and Dynamic Trunking Protocol (DTP). After the switch learns the source MAC address, it discards the packet. Then the switch crafts a RADIUS Access-Request packet. By default, the Access-Request message is a PAP authentication request. The request includes the source MAC address in three attributes: Attribute 1 (Username), Attribute 2 (Password), and Attribute 31 (Calling-Station-Id).
+
+Although the MAC address is the same in each attribute, the format differs, which is important because different RADIUS servers may use different attributes for MAC address validation. Some RADIUS servers may look at only Attribute 31 (Calling-Station-Id), while others will actually verify the username and password in Attributes 1 and 2. MAB uses the MAC address as both a username and password, so be sure that the RADIUS server can differentiate MAB requests from other request types. This differentiation will prevent other clients from attempting to use a MAC address as a valid credential. Cisco switches uniquely identify MAB requests by setting Attribute 6 (Service-Type) to 10 (Call-Check) in a MAB Access-Request message. Therefore, you can use Attribute 6 to filter MAB requests at the RADIUS server.
+
+Phase 3, Authorization: If the MAC address is valid, the RADIUS server returns a RADIUS Access-Accept message. This message informs the switch to allow endpoint port access. Optionally, the RADIUS server may include dynamic network access policy instructions in the Access-Accept message, which could be a dynamic VLAN or DACL. In the absence of dynamic policy instructions, the switch simply opens the port. If MAB succeeds, it will try no further authentication methods.
+
+If the MAC address is invalid or is rejected by network policy, the RADIUS server returns a RADIUS Access-Reject message. This message indicates that the switch should deny endpoint access to the port. Depending on how the switch is configured, several different outcomes are possible. If alternative authentication or authorization methods are configured, the switch may attempt IEEE 802.1X authentication or web authentication or deploy the guest VLAN.
+
+If no fallback authentication or authorization methods are configured, the switch will stop the authentication process and the port will remain unauthorized. You can configure the switch to restart authentication after a failed MAB attempt. You must configure the interface with the authentication timer restart feature. Once enabled, unknown MAC addresses will periodically fail authentication until the endpoint disconnects from the switch or the address is added to a MAC database. To prevent the unnecessary control-plane traffic that is associated with restarting failed MAB sessions, Cisco generally recommends that you leave authentication timer restart disabled.
+
+Phase 4, Accounting: If the switch can successfully apply the authorization policy, the switch can send a RADIUS Accounting-Request message to the RADIUS server with details about the authorized session.
+
+### Guest VLAN
+
+The guest VLAN feature is designed to support non-supplicant hosts that are attempting to access a wired switch port that is configured for the 802.1X port control. After three EAP retries, the switch dynamically places that port on a guest VLAN that is configured on the switch port. Guest VLAN is compatible with MAB. If MAB is configured and MAB fails after 802.1X failure, the port can be moved to the guest VLAN. The guest VLAN traffic is typically restricted by using an ACL on the termination point of the VLAN, for example, to allow access only to the Internet.
+
+The example that is shown in the figure allows secure guest access to the internet through a Cisco Adaptive Security Appliance (ASA) firewall
+
+:::note
+The guest VLAN functionality in combination with MAB does not work with the default configuration of Cisco ISE. Cisco ISE MAB authentication policy is by default configured in such a way that MAB will always succeed for the unknown MAC addresses. This means that the configured guest VLAN functionally on the switch never kicks in. In such case, you can use dynamic guest VLAN functionality, which relies on the Cisco ISE server to assign a VLAN when an unknown MAC address attempts to access the port after IEEE 802.1X times out or fails. The dynamically assigned VLAN would be one for which restricted access can be enforced. From the perspective of the switch, MAB passes even though the MAC address is unknown. The advantage of this approach over the local guest VLAN is that the Cisco ISE server is aware of and in control of unknown endpoints. Centralized visibility and control make this approach even more preferable.
+:::
+
+### Restricted VLAN
+
+Sometimes, a guest user will connect to the network of your organization with a host with 802.1X supplicant software. When the host plugs in to the switch port, the supplicant will initiate an EAPOL connection with the switch. However, because the user lacks local authentication credentials, authentication will fail. By configuring a restricted VLAN, the user can be dynamically assigned to a VLAN for restricted access.
+
+Restricted VLAN (also referred to as an authentication failed VLAN) and MAB are mutually exclusive. After 802.1X authentication failure, the switch can be configured either to deploy restricted VLAN or proceed to the next authentication method, which is usually MAB.
+
+:::Note
+Similar as with the guest VLAN functionality, you can use the dynamic VLAN functionality, which relies on the Cisco ISE server to assign a dynamic guest VLAN after IEEE 802.1X times out or fails. In most cases with Cisco ISE deployments, dynamic guest and restricted VLAN will be the same and will be dynamically pushed from Cisco ISE.
+:::
+
+### 802.1X Host Modes
+
+The host mode of the 802.1X port determines whether more than one client can be authenticated on the port and how authentication will be enforced. You can configure an 802.1X port to use any of the four host modes that are described. In addition, each mode may be modified to allow preauthentication open access.
+
+Single host mode: In the single host mode, only one client can be connected to the 802.1X-enabled port. When the port state changes to "up," the switch detects the client and sends an EAPOL frame. Client access is granted after authentication. Packets from other hosts are dropped. If the client leaves, or is replaced with another client, the switch changes the port link state to "down." The port is then returned to the unauthorized state.
+
+Multiple host mode: In the multiple host mode (often called multihost mode), you can attach multiple hosts to a single 802.1X-enabled port. In this mode, only the first client that attaches clients must be authorized. All subsequent clients are granted network access based on this authentication. If the port becomes unauthorized (reauthentication fails or an EAPOL logoff message is received), the authenticator denies network access to all attached clients.
+
+Multiple Domain Authentication Mode: Multidomain Authentication (MDA) mode allows an IP phone, and a single host behind the IP phone, to authenticate independently via 802.1X, MAB, or (for the host only) web-based authentication. In this application, multidomain refers to two domains (data and voice VLAN). Only one MAC address is allowed per domain. The switch can place the host in the data VLAN and the IP phone in the voice VLAN, but they appear on the same switch port. The data and voice VLAN assignment can be obtained dynamically from the authentication, authorization, and accounting (AAA) server such as Cisco ISE.
+
+Multiple Authentication Mode: Multiple Authentication mode (often called multiauth mode) allows one 802.1X or MAB client on the voice VLAN. It also allows multiple authenticated 802.1X, MAB, or web authorization clients on the data VLAN. When a hub or access point is connected to an 802.1X port, multiauth mode provides enhanced security over the multihosts mode by requiring authentication of each connected client. For non-802.1X devices, MAB, or web-based authentication, can be used as the fallback method for individual host authentications, which allows different hosts to be authenticated through different methods on a single port.
+
+In this mode, the first host that is authorized on the port defines the group VLAN assignment, and subsequent hosts will be added to the same group VLAN. The subsequent hosts may either have no VLAN assignment in the RADIUS database, or their configured group VLAN must match the assigned group VLAN on the port. Otherwise, they will be denied access to the port.
+
+Furthermore, if the authentication server assigns a DACL, the DACL will be modified to use the authenticated host’s IP address as the source address. In other words, in multiauth mode, per-host differentiated DACLs are supported.
+
+### 802.1X Flexible Authentication
+
+Flexible authentication provides a flexible timeout and fallback mechanism among 802.1X, MAB, and local web authentication methods.
+
+On switch ports that are configured for 802.1X port control, Flexible Authentication, or FlexAuth, sets the order of methods that the switch attempts when trying to authenticate a new device that is connected to a port. If one method in the list is unsuccessful, the next method is attempted. This simplifies the identity configuration by providing a single set of configuration commands to manage different types of endpoints connecting to the switch ports.
+
+In addition, FlexAuth sequencing allows you to configure any authentication method on a standalone basis. In other words, MAB can be configured without requiring 802.1X configuration.
+
+By default, the Cisco Catalyst switch will first perform 802.1X authentication. If it fails, and the switch is configured to proceed with the next method, such as MAB, the switch will then perform MAB.
+
+In environments where the majority of hosts authenticate using MAB, you may want a switch to perform MAB first and 802.1X second. This will prevent hosts being delayed when accessing the network and waiting for 802.1X to timeout.
+
+When the authentication order is set to initiate MAB first, the endpoint directory on the authentication server will be queried. If the host has an 802.1X supplicant, the supplicant will also initiate 802.1X authentication from its side. As a result, it may happen that both MAB and 802.1X authentication will succeed. In such case, you need to configure FlexAuth priority for 802.1X authentication to have priority over MAB. In such case, if the supplicant on the port begins an EAPOL session, MAB will be interrupted, and normal authentication will proceed.
+
+When designing 802.1X deployment, you should weigh the benefit of quickly authenticating MAB devices against the additional authentication overhead.
+
+:::note
+Setting FlexAuth to authenticate using MAB first and 802.1X second may cause problems when periodic reauthentication is enabled on a switch. In such cases, the switch will initiate new authentication request using MAB, once periodic re-authentication kicks in. MAB authentication with Cisco ISE default configuration does not fail for unknown endpoints, especially in a combination with central web authentication, so the switch will assign authorization attributes from MAB authentication and will never proceed to 802.1X. In such case, all previously 802.1X authenticated hosts will get access as defined by the Cisco ISE MAB authorization policy. When using re-authentication in a combination with central web authentication, it is recommended to perform 802.1X authentication first, and rather decrease 802.1X timers in order for MAB to happen sooner.
+:::
+
+### Inaccessible Authentication Bypass
+
+When deploying 802.1X it is also recommended to deploy the inaccessible authentication bypass feature, also referred to as critical authentication or the AAA fail policy. This feature is applied when the switch cannot reach the configured RADIUS servers (ISE) and new hosts cannot be authenticated. If the feature is configured, when a new host tries to connect to the port and RADIUS server (ISE) is not reachable, that host is moved to a user-specified access VLAN, the critical VLAN.
+
+Port is put into critical-authentication state if AAA server (ISE) is not reachable.
+
+When a new host tries to connect to the critical port, that host is moved to a user-specified access VLAN, the critical VLAN. You usually allow limited connectivity inside that VLAN.
+
+When the switch tries to authenticate a host connected to a critical port, the switch checks the status of the configured RADIUS server (ISE). If a server is available, the switch can authenticate the host. However, if all the RADIUS servers (ISEs) are unavailable, the switch grants network access to the host and puts the port in the critical-authentication state, which is a special case of the authentication state.
+
+You can configure the critical port to reinitialize hosts and move them out of the critical VLAN when the RADIUS server (ISE) is again available. When this is configured, all critical ports in the critical-authentication state are automatically re-authenticated.
+
+Inaccessible authentication bypass works for voice VLAN as well. With the critical voice VLAN configuration, when the RADIUS server (ISE) does not respond, the port goes into critical authentication mode. When traffic coming from the host is tagged with the voice VLAN, the connected device (the phone) is put in the configured voice VLAN for the port. The IP phones learn the voice VLAN identification through CDP (Cisco devices) or through LLDP or DHCP.
+
+:::note
+Low-impact mode does not work well with the inaccessible authentication bypass feature. When a RADIUS server (ISE) is not reachable, a port is put into critical state and critical VLAN is applied. The problem is that preauthentication ACL is still applied to the port in critical state, therefore limiting traffic going through the port into the critical VLAN.
+:::
+
+### 802.1X Timers
+802.1X relies on several timers and variables to control the timing of the authenticator functionality on the switch. Before 802.1X deployment you should be familiar with 802.1X timers that greatly improve 802.1X authentication process for endpoints that authenticate using MAB.
+
+At the link up event, the switch sends an EAP Request-Identity frame. It waits for a period of time defined by the dot1x timeout tx-period timer and then sends another Request-Identity frame. The number of times it resends the Request-Identity frames is defined by `dot1x max-reauth-req` variable.
+
+The combination of tx-period and max-reauth-req is especially important for non-802.1X capable endpoints. Endpoints without a supplicant must wait until 802.1X times out before getting network access via a fallback mechanism (such as MAB). The total time it takes for 802.1X to time out is determined by the following formula:
+
+> Timeout = (max-reauth-req +1) * tx-period
+
+Cisco Catalyst switches have default values of tx-period = 30 seconds and max-reauth-req = 2. Applying the above formula, it takes 90 seconds by default for an endpoint without a supplicant to get access via MAB, or the Guest VLAN. By modifying these two settings, you can decrease the total timeout down to a minimum value of two seconds.
+
+Because of the impact on endpoints without supplicants, it is generally recommended to change the default values of tx-period and/or max-reauth-req to allow a more rapid access to the network. When modifying these values, consider the following:
+
+A timer that is too short may result in 802.1X capable endpoints being subject to a fallback authentication or authorization technique. Although supplicants can send an EAPoL-Start frame to restart 802.1X after a fallback has occurred, you may still be generating unnecessary control plane traffic. In addition, if the endpoint has been authorized by a fallback method, that endpoint may temporarily be adjacent to guest devices that have been similarly authorized. If your goal is to ensure that your 802.1X capable assets are always and exclusively on a trusted network, you should ensure that the timer is long enough to allow 802.1X capable endpoints time to authenticate.
+
+A timer that is too long can subject endpoints without a supplicant to unnecessarily long delays in getting network access.
+
+| Command | Description |
+| --- | --- |
+| `dot1x timeout tx-period seconds` | Configures the number of seconds between retransmission of EAP request/identity frame packets (assuming that no response is received) to the client |
+| `dot1x max-reauth-req number` | Sets the maximum number of times the authenticator sends an EAP request/identity frame (assuming that no response is received) to the client |
+
+:::note
+Test `tx-period` and `max-reauth-req` in your network. Because the optimal value for the timeout depends on the specific details of your network, it is recommended that you use the 802.1X deployment planning phase to test whichever value you select. Pay particular attention to DHCP clients, PXE clients, and the specifics of your managed desktop infrastructure.
+:::
+
+:::note
+There are also other 802.1X timers that you can tune but are not discussed. These other timers are rarely invoked in typical 802.1X deployments and are usually not changed.
+:::
+
+### Configure 802.1X on a Cisco Catalyst Switch
+To configure 802.1X on a Cisco Catalyst switch you need to first configure global AAA settings. These settings include enabling AAA new-model and configure AAA lists for 802.1X.
+
+Next, you need to configure global RADIUS settings, which include configuration of individual RADIUS servers (ISE), RADIUS server group, RADIUS attributes, and RADIUS Change of Authorization (CoA). The RADIUS CoA feature provides a mechanism to change the attributes of an authentication, authorization, and accounting (AAA) session after it is authenticated. When there is a policy change for a user or user group in AAA, RADIUS CoA packets can be sent from the AAA server such as ISE to reinitialize the authentication and apply the new policy.
+
+Then, enable the IP device tracking functionality. The purpose of IP device tracking is for the switch to obtain and maintain a list of devices that are connected to the switch via an IP address. This functionality is critical whenever DACLs are used with 802.1X in order to replace the "any" keyword as the source in the ACL with the IP address of the device connected to the switch.
+
+Now you need to enable 802.1X authentication globally.
+
+Finally, you enable 802.1X functionality and related features on every interface you would like to enable for secure network access. These settings include enabling 802.1X and MAB, configuring order of 802.1X and MAB using Flexible Authentication, tuning of 802.1X timers, setting deployment mode, setting host mode, enabling reauthentication, configuring guest and restricted VLAN, and enabling Inaccessible Authentication Bypass (IAB) or critical data VLAN and critical voice VLAN. Some of these settings are discussed below.
+
+### Configure Global AAA Settings
+First, you need to configure global AAA settings.
+
+Enter configuration mode and enable AAA and 802.1X:
+
+```bash
+aaa new-model
+```
+
+Configure AAA for 802.1X:
+```bash
+aaa authentication dot1x default group ISE
+aaa authorization network default group ISE
+aaa accounting dot1x default start-stop group ISE
+```
+
+The table shows the first global configuration commands that are required to enable AAA and 802.1X support on a Cisco Catalyst access switch.
+
+| Command | Description |
+| --- | --- |
+| `aaa new-model` | Globally enables the AAA access model on the switch |
+| `aaa authentication dot1x default group ISE` | Globally enables 802.1X authentication. The `default group ISE` portion of the command causes the switch to use RADIUS server that are defined in the ISE server group. |
+| `aaa authorization network default group ISE` | Globally enables the RADIUS server to perform authorization tasks such as VLAN assignment and downloadable ACLs. |
+| `aaa accounting dot1x default start-stop group  ISE` | Sends a start accounting notice at the beginning of a process and a stop accounting notice at the end of a process. The user process begins regardless of whether the start accounting notice was received by the accounting server. |
+
+### Configure Global RADIUS Settings
+
+The next example shows how to configure an AAA server (ISE). It is a best practice to configure an automated user to periodically test availability of the AAA server (ISE) and to configure RADIUS dead-server detection.
+
+Configure the RADIUS server with a shared secret and automated test user:
+
+```bash
+radius server ISE
+ address ipv4 10.64.0.100 auth-port 1812 acct-port 1813
+ automate-tester username dummy ignore-acct-port
+ key 3df23d21
+```
+
+Configure RADIUS dead-server detection:
+
+```bash
+radius-server dead-criteria time 5 tries 3
+radius-server deadtime 3
+```
+
+The `auth-port` and `acct-port` command arguments when specifying AAA server's IP address are optional. However, if these arguments are not included, the authentication port is UDP 1645 and the accounting port is UDP 1646. Cisco ISE listens on UDP ports 1812 and 1813 and UDP ports 1645 and 1646 to ensure maximum compatibility. For operational consistency, it is a best practice to standardize on one set of RADIUS UDP ports.
+
+It is recommended to enable the automated testing feature for the RADIUS server. With this practice, the switch sends periodic test authentication messages to the RADIUS server. It looks for a RADIUS response from the server. A success message is not necessary, a failed authentication will suffice, because it shows that the server is alive.
+
+It is also recommended to enable the AAA dead-server detection feature to specify the criteria that are used to mark a RADIUS server as dead. That is, you can configure the minimum amount of time, in seconds, that must elapse from the time that the switch last received a valid packet from the RADIUS server to the time the server is marked as dead. In addition, you can configure the number of consecutive timeouts that must occur on the switch before the RADIUS server is marked as dead.
+
+The table explains the commands that are needed to configure global RADIUS settings.
+
+| Command | Description |
+| --- | --- |
+| `radius server ISE` | Specifies the name for the RADIUS server |
+| `address ipv4 100.64.0.100 auth-port 1812 acct-port 1813` | Assigns an IPv4 address and optionally authentication and accounting ports to the RADIUS server |
+| `automate-tester username dummy ignore-acct-port` | Enables the automated testing feature for the RADIUS server with disabled testing on the UDP port for the RADIUS accounting server |
+| `key 3df23d21` | Specifies the shared secret text string used between the device and the RADIUS server |
+| `radius-server dead-criteria time 5 tries 3` | Determines how long to wait for a response from the RADIUS server before declaring it dead and attempting a connection to the next available server. In this example, the switch is configured for a 5- second timeout and will retry three times. This yields a dead time of 15 seconds (5 * 3). |
+| `radius-server deadtime 3` | Specifies amount of time in minutes before declaring previously dead RADIUS server us accessible again |
+
+In the next step, create a RADIUS server group and add previously configured RADIUS servers to the group for easier configuration management. Also enable CoA, which is needed for Cisco ISE services.
+
+Configure the RADIUS server group:
+
+```bash
+aaa group server radius ISE
+ server name ISE
+```
+
+Configure RADIUS CoA:
+
+```bash
+aaa server radius dynamic-author
+ client 10.64.0.100 server-key 3df23d21
+```
+
+The following table explains the commands that are needed to configure a RADIUS server group and to enable RADIUS CoA.
+
+| Command | Description |
+| --- | --- |
+| `aaa group server radius ISE` | Defines the AAA server group with a group name |
+| `server name ISE` | Associates previously defined RADIUS server with the defined server group |
+| `aaa server radius dynamic-author` | Enters dynamic authorization local server configuration mod |
+| `client 10.64.0.100 server-key 3df23d21` | Configures the RADIUS key to be shared between a device and RADIUS clients |
+
+The next example in the figure shows the commands that allow the switch to send RADIUS vendor-specific attributes (VSAs) to the authentication server, Cisco ISE.
+
+Configure support to send RADIUS vendor-specific attributes (VSAs):
+
+```bash
+radius-server vsa send authentication
+radius-server vsa send accounting
+```
+
+Define which RADIUS attributes to include with authentication requests:
+
+```bash
+radius-server attribute 6 on-for-login-auth
+radius-server attribute 8 include-in-access-req
+radius-server attribute 25 access-request include 
+```
+
+The following table explains the commands that are needed to enable RADIUS VSA attributes.
+
+| Command | Description |
+| --- | --- |
+| `radius-server vsa send authentication` | Allows the switch to send authentication-related VSAs to the authentication server |
+| `radius-server vsa send accounting` | Allows the switch to send accounting-related VSAs to the authentication server |
+| `radius-server attribute 6 on-for-login-auth` | Provides for the service-type attribute (attribute 6) in RADIUS Access-Accept messages |
+| `radius-server attribute 8 include-in-access-req` | Instructs the switch to include the user IP address in the Access-Request message |
+| `radius-server attribute 25 access-request include` | Instructs the switch to include the RADIUS class attribute in the Access-Request message. Failure to include this attribute can cause Cisco ISE to improperly process accounting messages. |
+
+### Enable IP Device Tracking
+
+Enable IP device tracking:
+
+```bash
+ip device tracking
+ip device tracking probe delay 10
+```
+
+The purpose of IP device tracking is for the switch to obtain and maintain a list of devices that are connected to the switch via an IP address. In order to do this, it sends unicast ARP probes with a default interval of 30 seconds; these probes are sent to the MAC address of the host connected on the other side of the link and use the source MAC address of the physical interface out of which the Address Resolution Protocol (ARP) goes and a sender IP address of 0.0.0.0.
+
+When enabling IP device tracking, it is recommended to configure the probe delay of 10 seconds. This minimizes the possibility to have the probe sent while the host on the other side of the link checks for duplicate IP addresses. If you do not configure the delay, you may start getting duplicate IP address errors on Microsoft Windows machines while they are in the DHCP request phase. In that case, the PC might not obtain an address, and the user must manually release or renew the address, disconnect and reconnect to the network, or reboot the PC in order to gain network access.
+
+The table explains the commands that are needed to enable IP device tracking.
+
+| Command | Description |
+| --- | --- |
+| `ip device tracking` | Enables IP device tracking globally |
+| `ip device tracking probe delay 10` | Does not allow a switch to send a probe for 10 seconds when it detects a link UP, which minimizes the possibility to have the probe sent while the host on the other side of the link checks for duplicate IP addresses. |
+
+### Globally Enable 802.1X
+
+Enable 802.1X globally:
+
+`dot1x system-auth-control`
+
+The following table explains the command to globally enable 802.1X authentication on the switch.
+
+| Command | Description |
+| --- | --- |
+| `dot1x system-auth-control` | Globally enables 802.1X authentication on the switch |
+
+Optionally, create an access list to define permitted traffic before the port is authenticated (used for low-impact mode):
+
+```bash
+ip access-list extended PRE-AUTH
+ remark DHCP
+ permit udp any eq bootpc any eq bootps
+ remark DNS
+ permit udp any any eq domain
+ remark Ping
+ permit icmp any any echo
+ remark PXE / TFTP
+ permit udp any any eq tftp
+ remark Drop and log the rest
+ deny ip any any log 
+```
+
+The example also shows a configured ACL that will be applied in the inbound direction on ports configured for 802.1X to implement low-impact mode. Without an ACL to permit basic services, protocols such as DHCP may time out waiting for the host supplicant to authenticate to the switch port.
+
+### Configure Interface Specific Settings
+Once you are done configuring global settings, you need to apply interface-specific 802.1X commands on all interfaces that will run the 802.1X authentication.
+
+The example shows how to configure a switch port for basic operations, which is required before you can apply an 802.1X configuration:
+
+- First, enter the interface configuration mode.
+- Set the port mode to access.
+- Configure the access VLAN.
+- Bind the preauthentication port ACL to the interface.
+- Enable PortFast
+
+```bash
+interface GigabitEthernet1/0/1
+ description PC
+ switchport mode access 
+ switchport access vlan 10
+ spanning-tree portfast 
+ ip access-group PRE-AUTH in
+```
+
+| Command | Description |
+| --- | --- |
+| `switchport mode access` | Configures the switch port as an access port for host attachment |
+| `switchport access vlan 10` | Associates the port with access VLAN 10 |
+| `spanning-tree portfast` | Allows a switch port to transition directly from spanning-tree blocking state to forwarding state |
+| `ip access-group PRE-AUTH in` | Applies the named access list to the switch port in the inbound direction |
+
+The next example shows the minimum commands that are necessary to configure 802.1X on an interface:
+
+- Optionally, allow hosts to access the network before the port is authorized (low-impact mode)
+- Enable 802.1X support on the interface.
+- Enable periodic reauthentication of the supplicant.
+- Configure the reauthentication timeout.
+
+The timer value can be set explicitly or be derived from RADIUS attribute 27 (session timeout).
+
+```bash
+interface GigabitEthernet1/0/1
+ authentication open
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+```
+
+| Command | Description |
+| --- | --- |
+| `authentication open` | Allows traffic to flow into a controlled port before it is authenticated. The use of an interface ACL is strongly recommended when this command is used. |
+| `authentication port-control auto` | Enables port-based authentication and causes the port to begin in the unauthorized state, allowing only EAPOL frames to be sent and received through the port |
+| `authentication periodic` | Allows the switch port to periodically require a supplicant to reauthenticate to the network. If this command is not configured on an interface with 802.1X port control, the supplicant remains authenticated indefinitely. |
+| `authentication timer reauthenticate server` | Configures the reauthentication interval. The final argument in the command can be set to `timer` or `server`. If set to `timer`, the default reauthentication timeout is 3600 seconds (1 hour). If the argument is set to `server`, the reauthentication timer is configured on the RADIUS server by setting the Session-Timeout RADIUS attribute (attribute 27). |
+
+There are special considerations for the configuration of switch ports where an IP phone has a PC connected to it. By default, only one MAC address is permitted to be authenticated in an 802.1X-controlled switch port. Therefore, you need to enable MDA. It allows two MAC addresses to authenticate separately on the voice and data VLANs.
+
+Another deployment option for IP phones without a supplicant with tethered PCs is to allow MAB for the IP phone and require 802.1X authentication for the PC. The functionality that allows both authentication types is a feature called flexible authentication (FlexAuth). FlexAuth allows administrators to support both MAB and 802.1X on the same switch port and to also specify order and priority of the authentication mechanisms.
+
+Generally, it is recommended to set the FlexAuth order to 802.1X authentication first and MAB second. The same applies for the priority.
+
+The next example shows how to configure support for an IP phone:
+
+- Configure a voice VLAN.
+- Configure MDA.
+- Configure FlexAuth authentication order.
+- Configure FlexAuth authentication priority.
+- Enable MAB on the interface.
+
+```bash
+interface GigabitEthernet1/0/1
+ description IP Phone + PC
+ switchport voice vlan 40
+ authentication open
+ authentication host-mode multi-domain
+ mab
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication event fail action next-method
+```
+
+| Command | Description |
+| --- | --- |
+| `authentication host-mode multi-domain` | Enables MDA. MDA allows one MAC address on the voice VLAN and one MAC address on the data VLAN to authenticate using 802.1X. |
+| `authentication open` | When used with MDA, the `authentication open` command allows traffic to flow on the voice and data VLANs before authentication is successful. It is a best practice to apply an interface ACL to restrict allowed traffic before authentication. |
+| `mab` | This command enables MAC-based authentication on a port. |
+| `authentication order dot1x mab` | This `FlexAuth` command allows the administrator to select the order in which authentication methods are executed. |
+| `authentication priority dot1x mab` | This `FlexAuth` command determines the priority of authentication methods. |
+| `authentication event fail action next-method` | Specifies the behavior when authentication fails. In the example the next configured authentication method, which is MAB, is attempted. |
+
+The next example shows how to enable inaccessible authentication bypass (critical data VLAN and critical voice VLAN):
+
+- Configure critical VLAN for data
+- Configure critical voice VLAN
+- Reinitialize port when AAA server comes back up
+
+```bash
+interface GigabitEthernet1/0/1
+ authentication event server dead action authorize vlan 88
+ authentication event server dead action authorize voice
+ authentication event server alive action reinitialize
+```
+
+| Command | Description |
+| --- | --- |
+| `authentication event server dead action authorize vlan 88` | Configures a critical VLAN to move hosts on the port to the user-specified critical VLAN if the RADIUS server is unreachable. |
+| `authentication event server dead action authorize voice` | Configures critical voice VLAN to move data traffic on the port to the voice VLAN if the RADIUS server is unreachable. |
+| `authentication event server alive action reinitialize` | Re-initializes a port when RADIUS server becomes reachable again. |
+
+### Review Cisco Catalyst Switch 802.1X Configuration
+
+In the next demonstration slide, you will review a complete 802.1X configuration on the Cisco Catalyst switch.
+<details>
+  <summary>The following figure shows the topology that is used for this slide:</summary>
+    <img
+      src={require('./img2/review_catalyst_802_1x_configs_2s.gif').default} 
+      alt="Review Cisco Catalyst Switch 802.1X Configuration"
+    />
+</details>
+
+## Cisco WLC 802.1X Configuration
+
+## Cisco ISE 802.1X Configuration
+
+## Supplicant 802.1X Configuration
+
+## Cisco Central Web Authentication
