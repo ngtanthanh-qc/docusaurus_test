@@ -35,19 +35,18 @@ This article will cover steps to configure 802.1X on:
 
 ## Cisco Catalyst Switch 802.1X Configuration
 You can use a phased approach when deploying 802.1X. This phased approach helps you to determine the potential impact to devices, adjust policy enforcement over time, and ensure a smooth transition to identity-based policy services.
+![](./img2/802_1x_wired_modes.webp)
 
 You can use these 802.1X deployment modes:
-
 - **Monitor (open) mode**: Allows you to enable authentication across the wired infrastructure, without affecting wired users or devices. It can be thought of as an audit mode. With the help of logging data for validation, administrators use the monitor mode to help ensure that all devices are authenticating correctly, either with 802.1X or MAB. If a device is misconfigured or is missing an 802.1X supplicant, access will be allowed and logged. However, if authentication succeeds, authorization (for example, Dynamic VLAN, downloadable access control list (dACL)) can still be applied.
-
 - **Low-impact mode**: It allows selective transition from an open (nonfiltering) preauthorization method to selective preauthorization. This function is provided by static port ACLs (Pre-ACL as shown in the previous figure) that allow necessary services such as Dynamic Host Configuration Protocol (DHCP) and Domain Name System (DNS) while blocking all other network access. Users connected to controlled ports will receive additional access (based on policy) after successful authentication, based on the dACL that will override the static ACL on the port.
-
 - **High-security (closed) mode**: It provides the highest level of control by configuring the closed preauthorization port control. No traffic will be permitted on a port except Extensible Authentication Protocol over LAN (EAPOL) before authentication and authorization.
-
 
 ### 802.1X Phased Deployment Modes
 
 #### Monitor Mode
+![](./img2/monitor_mode.webp)
+
 In the monitor mode, the open access feature allows end user access, regardless of authentication results. Thus, the 802.1X, MAB, or web authentication deployment has no effect on user access. 802.1X-enabled ports do not block traffic before successful authentication and authorization, as they would normally. This feature allows you to create an initial Cisco ISE deployment and learn about your network without having to worry about blocking access unintentionally.
 
 :::note
@@ -66,6 +65,8 @@ In the monitor mode, you can discover the following:
 
 The low-impact mode allows you to incrementally increase your security. You may have previously configured ports for open mode to gain insight into the network and endpoint usage. Now you can configure these open ports with a preauthentication ACL and permit only basic connectivity for unauthenticated hosts.
 
+![](./img2/low-impact-mode.webp)
+
 For example, unauthenticated users may be able to use DHCP, DNS, and perhaps get to the Internet without gaining access to all internal resources.
 
 After successful authentication, the Cisco ISE authentication server sends a DACL to override any existing port ACL. This action provides differentiated access for authenticated users.
@@ -74,9 +75,13 @@ After successful authentication, the Cisco ISE authentication server sends a DAC
 
 The last option for 802.1X-enabled switch ports involves strict use of the traditional, closed mode, along with differentiated access, which could be dynamic VLAN assignment, DACLs, or another authorization mechanism. Formerly known as the high-security mode, it allows only Extensible Authentication Protocol over LAN (EAPOL) traffic until the authentication process completes, which is the default behavior of an 802.1X- enabled switch port. EAP is the message format and framework defined by RFC 4187 that provides a way for the supplicant and the authenticator to negotiate an authentication method (the EAP method). EAP over LAN (EAPoL) is the encapsulation defined by 802.1X for the transport of the EAP from the supplicant to the switch.
 
+![](./img2/close_mode.webp)
+
 #### 802.1X Fallback Options
 
 Even though IEEE 802.1X supplicant support on user's devices is ubiquitous, either coming directly from the operating system vendor as a preinstalled package or as a third-party add-on, there are always some devices that either do not have the supplicant installed or supported. Such non-supplicant devices can come in the form of wired or wireless devices, such as laptops, printers, IP cameras, tablets, and other mobile devices.
+
+![](./img2/fallback_option1.webp)
 
 There are also some users that bring their own laptops or mobile devices into a network and those devices are usually not configured with the supplicant or do not have correct credentials to authenticate. Sometimes, the device lacks 802.1X support altogether.
 
@@ -95,37 +100,40 @@ Some of the methods listed above are mutually exclusive. It is your task to deci
 
 MAB uses a MAC address for both the username and password. This authentication is the most basic form of authentication in deployments because many devices either do not, or cannot, support 802.1X. Because MAC addresses are easily spoofed, they are a relatively weak form of authentication, but they are a good first step for device identification. It is very common to use MAB as an 802.1X fallback mechanism to authenticate simple devices, such as printer, IP cameras, or physical access control mechanisms, such as card readers.
 
+![](./img2/mab_1.webp)
+
 The figure illustrates a high-level functional sequence when MAB is configured as a fallback mechanism to 802.1X. If 802.1X is not enabled, the sequence is the same except that MAB starts immediately after link-up, instead of waiting for IEEE 802.1X to time out.
+
+![](./img2/mab_2.webp)
 
 As you can see from the figure, there are four phases:
 
-Phase 1: Initiation
+- **Phase** 1: Initiation
+- **Phase** 2: MAC Address Learning
+- **Phase** 3: Authorization
+- **Phase** 4: Accounting
 
-Phase 2: MAC Address Learning
+**Phase 1, Initiation**: From the switch’s perspective, authentication begins when the switch detects link-up on a port. The switch initiates authentication by sending an EAP Request-Identity message to the endpoint. If the switch does not receive a response, it retransmits the request at periodic intervals. If no response is received after the maximum number of retries, the switch lets IEEE 802.1X time out and proceeds to MAB, if configured.
 
-Phase 3: Authorization
-
-Phase 4: Accounting
-
-Phase 1, Initiation: From the switch’s perspective, authentication begins when the switch detects link-up on a port. The switch initiates authentication by sending an EAP Request-Identity message to the endpoint. If the switch does not receive a response, it retransmits the request at periodic intervals. If no response is received after the maximum number of retries, the switch lets IEEE 802.1X time out and proceeds to MAB, if configured.
-
-Phase 2, MAC Address Learning: During the MAC address learning stage, the switch begins MAB by opening the port to accept a single packet. The switch will then learn the source MAC address of the endpoint. Packets that are sent before the port has fallen back to MAB (that is, during the IEEE 802.1X timeout phase) are discarded immediately. They cannot be used to learn the MAC address. The switch can use almost any Layer 2 and Layer 3 packets to learn MAC addresses. The exception are frames such as Cisco Discovery Protocol, Link Layer Discovery Protocol (LLDP), Spanning Tree Protocol (STP), and Dynamic Trunking Protocol (DTP). After the switch learns the source MAC address, it discards the packet. Then the switch crafts a RADIUS Access-Request packet. By default, the Access-Request message is a PAP authentication request. The request includes the source MAC address in three attributes: Attribute 1 (Username), Attribute 2 (Password), and Attribute 31 (Calling-Station-Id).
+**Phase 2, MAC Address Learning**: During the MAC address learning stage, the switch begins MAB by opening the port to accept a single packet. The switch will then learn the source MAC address of the endpoint. Packets that are sent before the port has fallen back to MAB (that is, during the IEEE 802.1X timeout phase) are discarded immediately. They cannot be used to learn the MAC address. The switch can use almost any Layer 2 and Layer 3 packets to learn MAC addresses. The exception are frames such as Cisco Discovery Protocol, Link Layer Discovery Protocol (LLDP), Spanning Tree Protocol (STP), and Dynamic Trunking Protocol (DTP). After the switch learns the source MAC address, it discards the packet. Then the switch crafts a RADIUS Access-Request packet. By default, the Access-Request message is a PAP authentication request. The request includes the source MAC address in three attributes: Attribute 1 (Username), Attribute 2 (Password), and Attribute 31 (Calling-Station-Id).
 
 Although the MAC address is the same in each attribute, the format differs, which is important because different RADIUS servers may use different attributes for MAC address validation. Some RADIUS servers may look at only Attribute 31 (Calling-Station-Id), while others will actually verify the username and password in Attributes 1 and 2. MAB uses the MAC address as both a username and password, so be sure that the RADIUS server can differentiate MAB requests from other request types. This differentiation will prevent other clients from attempting to use a MAC address as a valid credential. Cisco switches uniquely identify MAB requests by setting Attribute 6 (Service-Type) to 10 (Call-Check) in a MAB Access-Request message. Therefore, you can use Attribute 6 to filter MAB requests at the RADIUS server.
 
-Phase 3, Authorization: If the MAC address is valid, the RADIUS server returns a RADIUS Access-Accept message. This message informs the switch to allow endpoint port access. Optionally, the RADIUS server may include dynamic network access policy instructions in the Access-Accept message, which could be a dynamic VLAN or DACL. In the absence of dynamic policy instructions, the switch simply opens the port. If MAB succeeds, it will try no further authentication methods.
+**Phase 3, Authorization**: If the MAC address is valid, the RADIUS server returns a RADIUS Access-Accept message. This message informs the switch to allow endpoint port access. Optionally, the RADIUS server may include dynamic network access policy instructions in the Access-Accept message, which could be a dynamic VLAN or DACL. In the absence of dynamic policy instructions, the switch simply opens the port. If MAB succeeds, it will try no further authentication methods.
 
 If the MAC address is invalid or is rejected by network policy, the RADIUS server returns a RADIUS Access-Reject message. This message indicates that the switch should deny endpoint access to the port. Depending on how the switch is configured, several different outcomes are possible. If alternative authentication or authorization methods are configured, the switch may attempt IEEE 802.1X authentication or web authentication or deploy the guest VLAN.
 
 If no fallback authentication or authorization methods are configured, the switch will stop the authentication process and the port will remain unauthorized. You can configure the switch to restart authentication after a failed MAB attempt. You must configure the interface with the authentication timer restart feature. Once enabled, unknown MAC addresses will periodically fail authentication until the endpoint disconnects from the switch or the address is added to a MAC database. To prevent the unnecessary control-plane traffic that is associated with restarting failed MAB sessions, Cisco generally recommends that you leave authentication timer restart disabled.
 
-Phase 4, Accounting: If the switch can successfully apply the authorization policy, the switch can send a RADIUS Accounting-Request message to the RADIUS server with details about the authorized session.
+**Phase 4, Accounting**: If the switch can successfully apply the authorization policy, the switch can send a RADIUS Accounting-Request message to the RADIUS server with details about the authorized session.
 
 ### Guest VLAN
 
 The guest VLAN feature is designed to support non-supplicant hosts that are attempting to access a wired switch port that is configured for the 802.1X port control. After three EAP retries, the switch dynamically places that port on a guest VLAN that is configured on the switch port. Guest VLAN is compatible with MAB. If MAB is configured and MAB fails after 802.1X failure, the port can be moved to the guest VLAN. The guest VLAN traffic is typically restricted by using an ACL on the termination point of the VLAN, for example, to allow access only to the Internet.
 
 The example that is shown in the figure allows secure guest access to the internet through a Cisco Adaptive Security Appliance (ASA) firewall
+
+![](./img2/guest_VLAN_1.webp)
 
 :::note
 The guest VLAN functionality in combination with MAB does not work with the default configuration of Cisco ISE. Cisco ISE MAB authentication policy is by default configured in such a way that MAB will always succeed for the unknown MAC addresses. This means that the configured guest VLAN functionally on the switch never kicks in. In such case, you can use dynamic guest VLAN functionality, which relies on the Cisco ISE server to assign a VLAN when an unknown MAC address attempts to access the port after IEEE 802.1X times out or fails. The dynamically assigned VLAN would be one for which restricted access can be enforced. From the perspective of the switch, MAB passes even though the MAC address is unknown. The advantage of this approach over the local guest VLAN is that the Cisco ISE server is aware of and in control of unknown endpoints. Centralized visibility and control make this approach even more preferable.
@@ -137,6 +145,8 @@ Sometimes, a guest user will connect to the network of your organization with a 
 
 Restricted VLAN (also referred to as an authentication failed VLAN) and MAB are mutually exclusive. After 802.1X authentication failure, the switch can be configured either to deploy restricted VLAN or proceed to the next authentication method, which is usually MAB.
 
+![](./img2/restricted_VLAN.webp)
+
 :::Note
 Similar as with the guest VLAN functionality, you can use the dynamic VLAN functionality, which relies on the Cisco ISE server to assign a dynamic guest VLAN after IEEE 802.1X times out or fails. In most cases with Cisco ISE deployments, dynamic guest and restricted VLAN will be the same and will be dynamically pushed from Cisco ISE.
 :::
@@ -145,13 +155,17 @@ Similar as with the guest VLAN functionality, you can use the dynamic VLAN funct
 
 The host mode of the 802.1X port determines whether more than one client can be authenticated on the port and how authentication will be enforced. You can configure an 802.1X port to use any of the four host modes that are described. In addition, each mode may be modified to allow preauthentication open access.
 
-Single host mode: In the single host mode, only one client can be connected to the 802.1X-enabled port. When the port state changes to "up," the switch detects the client and sends an EAPOL frame. Client access is granted after authentication. Packets from other hosts are dropped. If the client leaves, or is replaced with another client, the switch changes the port link state to "down." The port is then returned to the unauthorized state.
+- **Single host mode**: In the single host mode, only one client can be connected to the 802.1X-enabled port. When the port state changes to "up," the switch detects the client and sends an EAPOL frame. Client access is granted after authentication. Packets from other hosts are dropped. If the client leaves, or is replaced with another client, the switch changes the port link state to "down." The port is then returned to the unauthorized state.
 
-Multiple host mode: In the multiple host mode (often called multihost mode), you can attach multiple hosts to a single 802.1X-enabled port. In this mode, only the first client that attaches clients must be authorized. All subsequent clients are granted network access based on this authentication. If the port becomes unauthorized (reauthentication fails or an EAPOL logoff message is received), the authenticator denies network access to all attached clients.
+- **Multiple host mode**: In the multiple host mode (often called multihost mode), you can attach multiple hosts to a single 802.1X-enabled port. In this mode, only the first client that attaches clients must be authorized. All subsequent clients are granted network access based on this authentication. If the port becomes unauthorized (reauthentication fails or an EAPOL logoff message is received), the authenticator denies network access to all attached clients.
 
-Multiple Domain Authentication Mode: Multidomain Authentication (MDA) mode allows an IP phone, and a single host behind the IP phone, to authenticate independently via 802.1X, MAB, or (for the host only) web-based authentication. In this application, multidomain refers to two domains (data and voice VLAN). Only one MAC address is allowed per domain. The switch can place the host in the data VLAN and the IP phone in the voice VLAN, but they appear on the same switch port. The data and voice VLAN assignment can be obtained dynamically from the authentication, authorization, and accounting (AAA) server such as Cisco ISE.
+![](./img2/802_1x_host_modes.webp)
 
-Multiple Authentication Mode: Multiple Authentication mode (often called multiauth mode) allows one 802.1X or MAB client on the voice VLAN. It also allows multiple authenticated 802.1X, MAB, or web authorization clients on the data VLAN. When a hub or access point is connected to an 802.1X port, multiauth mode provides enhanced security over the multihosts mode by requiring authentication of each connected client. For non-802.1X devices, MAB, or web-based authentication, can be used as the fallback method for individual host authentications, which allows different hosts to be authenticated through different methods on a single port.
+- **Multiple Domain Authentication Mode**: Multidomain Authentication (MDA) mode allows an IP phone, and a single host behind the IP phone, to authenticate independently via 802.1X, MAB, or (for the host only) web-based authentication. In this application, multidomain refers to two domains (data and voice VLAN). Only one MAC address is allowed per domain. The switch can place the host in the data VLAN and the IP phone in the voice VLAN, but they appear on the same switch port. The data and voice VLAN assignment can be obtained dynamically from the authentication, authorization, and accounting (AAA) server such as Cisco ISE.
+
+- **Multiple Authentication Mode**: Multiple Authentication mode (often called multiauth mode) allows one 802.1X or MAB client on the voice VLAN. It also allows multiple authenticated 802.1X, MAB, or web authorization clients on the data VLAN. When a hub or access point is connected to an 802.1X port, multiauth mode provides enhanced security over the multihosts mode by requiring authentication of each connected client. For non-802.1X devices, MAB, or web-based authentication, can be used as the fallback method for individual host authentications, which allows different hosts to be authenticated through different methods on a single port.
+
+![](./img2/802_1x_host_modes_2.webp)
 
 In this mode, the first host that is authorized on the port defines the group VLAN assignment, and subsequent hosts will be added to the same group VLAN. The subsequent hosts may either have no VLAN assignment in the RADIUS database, or their configured group VLAN must match the assigned group VLAN on the port. Otherwise, they will be denied access to the port.
 
@@ -160,6 +174,8 @@ Furthermore, if the authentication server assigns a DACL, the DACL will be modif
 ### 802.1X Flexible Authentication
 
 Flexible authentication provides a flexible timeout and fallback mechanism among 802.1X, MAB, and local web authentication methods.
+
+![](./img2/802_1x_flexible_auth_1.webp)
 
 On switch ports that are configured for 802.1X port control, Flexible Authentication, or FlexAuth, sets the order of methods that the switch attempts when trying to authenticate a new device that is connected to a port. If one method in the list is unsuccessful, the next method is attempted. This simplifies the identity configuration by providing a single set of configuration commands to manage different types of endpoints connecting to the switch ports.
 
@@ -183,6 +199,8 @@ When deploying 802.1X it is also recommended to deploy the inaccessible authenti
 
 Port is put into critical-authentication state if AAA server (ISE) is not reachable.
 
+![](./img2/inaccessible_authn_bypass_1.webp)
+
 When a new host tries to connect to the critical port, that host is moved to a user-specified access VLAN, the critical VLAN. You usually allow limited connectivity inside that VLAN.
 
 When the switch tries to authenticate a host connected to a critical port, the switch checks the status of the configured RADIUS server (ISE). If a server is available, the switch can authenticate the host. However, if all the RADIUS servers (ISEs) are unavailable, the switch grants network access to the host and puts the port in the critical-authentication state, which is a special case of the authentication state.
@@ -196,9 +214,12 @@ Low-impact mode does not work well with the inaccessible authentication bypass f
 :::
 
 ### 802.1X Timers
+
 802.1X relies on several timers and variables to control the timing of the authenticator functionality on the switch. Before 802.1X deployment you should be familiar with 802.1X timers that greatly improve 802.1X authentication process for endpoints that authenticate using MAB.
 
 At the link up event, the switch sends an EAP Request-Identity frame. It waits for a period of time defined by the dot1x timeout tx-period timer and then sends another Request-Identity frame. The number of times it resends the Request-Identity frames is defined by `dot1x max-reauth-req` variable.
+
+![](./img2/802_1x_timer_1.webp)
 
 The combination of tx-period and max-reauth-req is especially important for non-802.1X capable endpoints. Endpoints without a supplicant must wait until 802.1X times out before getting network access via a fallback mechanism (such as MAB). The total time it takes for 802.1X to time out is determined by the following formula:
 
@@ -208,9 +229,9 @@ Cisco Catalyst switches have default values of tx-period = 30 seconds and max-re
 
 Because of the impact on endpoints without supplicants, it is generally recommended to change the default values of tx-period and/or max-reauth-req to allow a more rapid access to the network. When modifying these values, consider the following:
 
-A timer that is too short may result in 802.1X capable endpoints being subject to a fallback authentication or authorization technique. Although supplicants can send an EAPoL-Start frame to restart 802.1X after a fallback has occurred, you may still be generating unnecessary control plane traffic. In addition, if the endpoint has been authorized by a fallback method, that endpoint may temporarily be adjacent to guest devices that have been similarly authorized. If your goal is to ensure that your 802.1X capable assets are always and exclusively on a trusted network, you should ensure that the timer is long enough to allow 802.1X capable endpoints time to authenticate.
+- A timer that is too short may result in 802.1X capable endpoints being subject to a fallback authentication or authorization technique. Although supplicants can send an EAPoL-Start frame to restart 802.1X after a fallback has occurred, you may still be generating unnecessary control plane traffic. In addition, if the endpoint has been authorized by a fallback method, that endpoint may temporarily be adjacent to guest devices that have been similarly authorized. If your goal is to ensure that your 802.1X capable assets are always and exclusively on a trusted network, you should ensure that the timer is long enough to allow 802.1X capable endpoints time to authenticate.
 
-A timer that is too long can subject endpoints without a supplicant to unnecessarily long delays in getting network access.
+- A timer that is too long can subject endpoints without a supplicant to unnecessarily long delays in getting network access.
 
 | Command | Description |
 | --- | --- |
@@ -508,6 +529,9 @@ interface GigabitEthernet1/0/1
 ### Review Cisco Catalyst Switch 802.1X Configuration
 
 In the next demonstration slide, you will review a complete 802.1X configuration on the Cisco Catalyst switch.
+
+![](./img2/review_cisco_catalyst_switch.webp)
+
 <details>
   <summary>The following figure shows the topology that is used for this slide:</summary>
     <img
@@ -517,8 +541,378 @@ In the next demonstration slide, you will review a complete 802.1X configuration
 </details>
 
 ## Cisco WLC 802.1X Configuration
+To deploy 802.1X for wireless network you need to start with configuration of global AAA settings on Cisco WLC. This configuration includes specifying Cisco ISE server as authentication and accounting server, including needed RADIUS configuration, such as RADIUS preshared key and RADIUS CoA configuration.
+
+The next step in deploying 802.1X for wireless networks is to enable 802.1X authentication on individual WLAN. You need to select Wi-Fi Protected Access 2 (WPA2) as Layer 2 security mechanism and 802.1X as key management mechanism.
+
+Inside the WLAN-specific settings you also need to select authentication and accounting server for that WLAN.
+
+Finally, you need to set the advanced parameters of the wireless LAN (WLAN), such as AAA override settings. This setting is needed if you want to dynamically push certain settings from the AAA server to the WLC, such as dynamic VLAN assignment
+
+### Configure Global RADIUS Settings
+You will start deploying 802.1X for wireless network by defining RADIUS AAA server (ISE) on Cisco WLC.
+
+Defining RADIUS server contains specifying the IP address of Cisco ISE, entering the RADIUS shared secret, and checking the **Apply Cisco ISE Default settings** check box.
+
+![](./img2/configure_global_radius.webp)
+
+Enabling Cisco ISE Default settings sets these parameters:
+- Enables RADIUS CoA.
+- Applies authentication server details (IP address and shared secret) also to the accounting server.
+- Sets the Layer 2 security of a WLAN to WPA+WPA2.
+- Sets authentication key management (AKM) method to 802.1X.
+- Enables MAC filtering if the Layer 2 security of a WLAN is set to None.
+
+Because of the previously enabled Cisco ISE default settings, the accounting server will be created automatically with the same settings as the authentication server. It is recommended to verify that the accounting server was indeed created, as shown in the following figure.
+
+![](./img2/configure_global_radius_2.webp)
+
+If the accounting server has not been added for any reason, add one manually.
+
+As you did when adding Cisco ISE as an authentication server, to manually add Cisco ISE as an accounting server, enter the IP address of Cisco ISE and the RADIUS shared secret. Leave the other settings at their defaults.
+
+
+### Enable 802.1X per WLAN
+The next step in deploying 802.1X for wireless networks is to enable 802.1X authentication on individual WLAN.
+
+Inside the Layer 2 security settings of the WLAN, make sure WPA+WPA2 is selected as the Layer 2 security mechanism and 802.1X is selected as AKM mechanism. These two will be enabled automatically if you enabled Cisco ISE Default settings.
+
+![](./img2/enable_802_1x_per_WLAN.webp)
+
+Next you need to select Cisco ISE as authentication and accounting server. Even though Cisco ISE and the WLC are properly configured for RADIUS communications, each WLAN must be configured to use RADIUS to authenticate wireless users. Choose the Cisco ISE IP address from the drop-down menus for Authentication Servers and Accounting Servers. You can choose more AAA servers for high-availability purposes.
+
+![](./img2/enable_802_1x_per_WLAN_2.webp)
+
+Next, you need to enable AAA override. This setting enables you to apply dynamic VLAN, Quality of Service (QoS), and ACLs to individual clients based on the returned RADIUS attributes from the AAA server, such as Cisco ISE. The AAA override setting is shown in the following figure.
+
+![](./img2/enable_802_1x_per_WLAN_3.webp)
+
+### Configure 802.1X on Cisco WLC
+
+In the next demonstration video, you will review the 802.1X configuration on the Cisco WLC.
+
+The topology that is used for this video is shown in the following figure.
+
+![](./img2/configure_802_1x_on_WLC.webp)
+
+You will connect to the WLC and configure all needed settings for the WLC to act as the 802.1X authenticator. These settings include configuring Cisco ISE as the RADIUS authentication and authorization server and enabling 802.1X authentication on a WLAN.
+
+<details>
+  <summary>The following figure shows the configurations on WLC:</summary>
+    <img
+      src={require('./img2/config_802_1x_on_WLC.gif').default} 
+      alt="Configure 802.1x on WLC"
+    />
+</details>
+
 
 ## Cisco ISE 802.1X Configuration
+
+Once the network devices, such as Cisco Catalyst switches and Cisco WLCs are configured with 802.1X settings, you need to deploy, setup, and configure Cisco ISE for basic 802.1X authentication and authorization.
+
+Cisco ISE configuration for 802.1X consists of the following overall tasks:
+
+Configure Cisco ISE digital certificates. Digital certificates on Cisco ISE are used for different purposes, for example for sever-side and client-side EAP authentication.
+
+Configure identity sources, that are used to verify clients identity. This include configuration of local user and device accounts, and integrations with external identity sources, such as Microsoft Active Directory, or general Lightweight Directory Access Protocol (LDAP) server.
+
+Configure network devices, which act as RADIUS clients. The settings include device name, IP address, and RADIUS settings.
+
+Review authentication policy. Generally, no changes are needed in Cisco ISE default authentication policy.
+
+Configure authorization policy. Authorization policy on Cisco ISE usually needs to be customized based on your requirements.
+
+### Configure Cisco ISE Certificates
+Cisco ISE heavily relies on public key infrastructure (PKI) and digital certificates for the following important purposes:
+
+- Cisco ISE's identity certificate is used to:
+  - Identify Cisco ISE when accessed over HTTPS (web management, guest portals, and so on).
+  - Identify Cisco ISE server in EAP methods that use digital certificates for server-side authentication.
+  - Identify Cisco ISE server in ISE distributed environment where the ISE servers communicate over Transport Layer Security (TLS).
+
+- Certificate Authority (CA) root certificate on Cisco ISE is used to:
+
+  - Authenticate clients in EAP methods that use client-based certificates.
+  - Authenticate other Cisco ISE nodes in distributed ISE environment.
+
+Cisco ISE comes by default with a self-signed certificate, which does not require operating an internal PKI, or the expense of purchasing certificates from a commercial CA. However, self-signed certificates are not scalable to large enterprises. Every host on the network would need a copy of a self-signed certificate added to its trusted certificate store for every Cisco ISE appliance using a self-signed certificate. In general, self-signed certificates should only be deployed in small or test environments.
+
+A PKI, on the other hand, is designed to securely distribute public key information in a scalable manner. This authentication framework is based on private and public key pairs. Public key authenticity is guaranteed by a CA, which is used to sign and issue certificates to entities, such as clients and Cisco ISE servers. Therefore, it is recommended that you enroll Cisco ISE in your PKI and obtain CA-signed certificate.
+
+Cisco ISE supports EAP methods that use password and certificate-based user authentication. Some authentication methods use a mixed approach. Mixed approaches use multiple credential types to achieve bi-directional authentication between the client and the server side, such as passwords, one-time passwords (OTPs), and certificates. Depending on the selected EAP method, you need to configure digital certificates on Cisco ISE, on clients, or both.
+
+For commonly used EAP methods that use only server-side certificate-based authentication, such as PEAP or EAP-FAST, a client validates the Cisco ISE authentication server certificate. Therefore, you need to generate a certificate for the Cisco ISE server on your CA. Meanwhile you also distribute a copy of the CA server’s root certificate to each client. In order to deploy CA root certificate on clients in a highly scalable manner, you can rely on software distribution systems, such as Microsoft Active Directory Group Policy for Microsoft Active Directory domain endpoints or on mobile device management (MDM) system for mobile devices.
+
+During EAP exchange, the client requests the Cisco ISE server certificate. Cisco ISE presents its identity certificate to the client. The client verifies this server certificate against its stored copy of the root certificate. If the ISE server certificate is valid, EAP process continues. If the client determines that the ISE server certificate is invalid, the process stops. The whole idea behind the server-side authentication is that the client makes sure that it communicates with the Cisco ISE server, because you would not want a client to reveal credentials to an untrusted server.
+
+
+Extensible Authentication Protocol-Transport Layer Security (EAP-TLS), however, uses certificate-based authentication for clients as well. Therefore, you must generate and distribute certificates for every client device, in addition to each authentication server (ISE). In order to verify client certificates on the Cisco ISE, you must also distribute the CA root certificate to Cisco ISE.
+
+During authentication, Cisco ISE requests that the client proves its identity. The client provides its certificate, and Cisco ISE verifies this certificate against its stored copy of the CA root certificate. Cisco ISE extracts the public key of the CA root certificate and uses it to validate the CA signature in the received client identity certificate.
+
+:::note
+The CA, responsible to generate certificates for clients, and the CA, responsible to generate certificates for ISE server(s) can either be the same, or different.
+:::
+
+The first step in configuring Cisco ISE certificates is typically importing the CA root certificate.
+
+The following figure shows an example of importing CA root certificate to Cisco ISE and enabling the certificate to be used to verify Cisco ISE servers identity in distributed ISE deployment, and to verify clients identity in certificate-based client-side authentication.
+
+:::note
+All the following Cisco ISE GUI screens are based on ISE version 2.4
+:::
+
+To enroll Cisco ISE in PKI, you need to create a certificate signing request (CSR) first. Inside the CSR, you need to specify certificate subject identifier. It needs to be set to fully qualified domain name of the ISE server.
+
+Next you need export the Certificate Signing Request (CSR) to the CA server and issue the certificate on the CA server. Once the certificate is generated, you need to export the certificate back to Cisco ISE and bind it to the previously generated CSR.
+
+Finally, you need to set the certificate usage, as shown in the following figure. In the example, the certificate usage is set for the web management portal and EAP authentication.
+
+
+### Configure Cisco ISE Identity Sources
+Cisco ISE relies on various identity sources to validate the user credentials and to check group information and other user or endpoint attributes.
+
+
+Cisco ISE supports internal and external identity sources. The internal identity source supports the following entities:
+
+- **User**: User identity information can include a username, password, e-mail address, account description, associated administrative group, user group, and role.
+- **Endpoint**: Endpoint identity information is stored for wired, wireless, or VPN-connected devices. The endpoint identity store typically represents an endpoint by its MAC address. Stored endpoint attributes may also include various other attributes, such as platform and OS version.
+
+Cisco ISE supports the following external identity sources:
+
+- **LDAP**: LDAP is a standards-based networking protocol that is used to query and modify directory services. LDAP can be used to retrieve user identity from Active Directory servers, Sun Directory servers, and the Novell eDirectory.
+- **Active Directory (Multi-Active Directory)**: Cisco ISE uses Microsoft Active Directory (AD) to access information about users, machines, groups, and attributes. Cisco ISE supports Multi-Active Directory: multiple joins to Active Directory domains, without need for specific trusts between them. Cisco ISE supports up to 50 Active Directory joins.
+- **RADIUS**: A RADIUS identity source is an external collection of subjects and their credentials and uses the RADIUS protocol for communication. Cisco ISE supports any RADIUS RFC 2865-compliant server.
+- **RSA**: RSA SecurID is a two-factor authentication external authentication server, which provides a unique dynamic authentication code for user authentication.
+- **SAML**: Supports Security Assertion Markup Language Version 2.0 (SAMLv2), which enables the exchange of security authentication information between an Identity Provider (IdP) and a service provider (Cisco ISE).
+- **Certificate Authentication Profile**: Some authentication methods use certificates in addition to, or instead of, a password or one-time password (OTP)-based authentication. For example, if you want to use the EAP-TLS certificate-based authentication method, it is necessary to create a certificate authentication profile.
+- **ODBC**: As of Cisco ISE v2.2, you can use an Open Database Connectivity (ODBC)-compliant database as an external identity source to authenticate users and endpoints. ODBC identity sources can be used in an identity store sequence and for guest and sponsor authentications, as well as for Bring Your Own Device (BYOD) flow. The following database engines are supported:
+  - MySQL
+  - Oracle
+  - PostgreSQL
+  - M- icrosoft SQL Server
+  - Sybase
+
+- **Social Login**: as of Cisco ISE v2.3 you can use social login, such as Facebook, as an external identity source for guest users.
+
+### Configure Internal Identity Source
+The internal user database offers a simple way to provision users and endpoints locally on Cisco ISE. This approach does not require any external servers and is thus applicable to test beds, temporary installations, and very small deployments. The most common use case for using internal identity source in the context of 802.1X is to maintain a database of MAC addresses for MAB, or to maintain a database of guest accounts for web authentication.
+
+For easier management of user and endpoint accounts, assign users and endpoints to groups. You can use these groups in authorization policy. User accounts also have a set of attributes, that you can use in authorization policy.
+
+Password is a mandatory parameter of an internal Cisco ISE user. Some protocols, such as EAP-TLS or Protected Extensible Authentication Protocol-Transport Layer Security (PEAP-TLS), do not use password-based authentication. The internal database does not work with these protocols.
+
+The internal database can include device endpoints. This database is used for MAB. To enable MAB with the internal Cisco ISE database, you must define endpoints and identify them by their device MAC addresses.
+
+Configuration of the internal user database starts with creation of user and endpoint groups.
+
+Cisco ISE comes with a set of built-in user and endpoint identity groups. You can edit the built-in groups or define your own custom groups for users and endpoints. The only mandatory setting for a user group is its name.
+
+Once you have defined the user and endpoint groups, you will configure the user accounts, if needed. The mandatory user attributes are the name, status, and password. Optional attributes include the email address, user information, description, and the requirement to change the password on the next login. For 802.1X deployments, user accounts in the internal user database are generally not needed. Instead, you will rely on integration with an existing external user database.
+
+To deploy MAB using the internal Cisco ISE endpoints database, you must identify and add endpoint MAC addresses. You can add endpoints manually, or by importing them from a file or an LDAP database. You can also export the endpoint information to a text file.
+
+The following figure shows how to work with endpoints in the internal identity source.
+
+
+### Configure External Identity Source
+Most companies deploy a scalable authentication framework, with external repositories that store user accounts and attributes. This process allows multiple systems to access a single, centralized database, and request desired information. The external identity source is configured in a redundant fashion to provide a highly available authentication solution.
+
+Cisco ISE can authenticate clients against a single authentication source or a sequence of authentication sources, as shown in the following figure.
+
+
+The following figure shows the first step to configure integration between Cisco ISE and Active Directory as external identity source. First you need to provide name of the joint point, which is used internally inside ISE to refer to the identity source, and Active Directory domain name.
+
+
+Once Cisco ISE joins the domain, you can import the Active Directory groups. Active Directory groups can be used in authorization policy to implement differentiated network access based on user group affiliation.
+
+You can also use Active Directory user attributes inside authorization policy. If this is needed, you need to import user attributes from the Active Directory as well.
+
+### Configure Identity Source Sequence
+Identity source sequences define the order in which Cisco ISE seeks user credentials in different databases. If you store user information in more than one database, you can define the order in which you want Cisco ISE to check these databases for user information.
+
+When a match is found, Cisco ISE does not look further. It evaluates the credentials and returns the result to the user. This policy is a "first match" policy.
+
+However, you can configure Cisco ISE behavior for situations when a certain database cannot be accessed. The two available settings are "continue to search other databases" or "stop processing altogether."
+
+The following example illustrates an identity source sequence of three databases: Active Directory, LDAP, and an internal identity store. When a user is not found in the Active Directory database, Cisco ISE proceeds to search the second source—LDAP. If the LDAP server is down, and the option "Proceed to the next store in the sequence”" is configured, Cisco ISE falls back to the third identity source option. Because the user is found in this database, and the credentials match, authentication succeeds.
+
+
+The figure shows how to navigate to the list of identity source sequences and then either add a new one or configure an existing one. In this case, you are viewing the existing Guest Portal Sequence. Available identity sources are listed on the left and selected sources are on the right. In this case, the internal user store will be checked before the internal Guest user store. Finally, all Active Directory join points will be checked for valid credentials.
+
+
+Notice the Advanced option at the bottom. These two options define the behavior when the database is not accessible:
+
+- **Do Not Access Other Stores in the Sequence**: This option is the default method and causes Cisco ISE to stop processing the list.
+- **Treat as if the User Was Not Found and Proceed to the Next Store in the Sequence**: This method enables failover to the next source if the database is not reachable.
+
+### Configure Network Devices in Cisco ISE
+Next you need to add your Cisco Catalyst switches and Cisco WLCs to Cisco ISE as network access devices (NADs).
+
+In the initial Cisco ISE configuration, the NAD device list will be empty.
+
+In the figure, the network device is a Cisco Catalyst 9300 access switch. You need to provide the hostname, IP address and optionally description. You can also group devices by type and, optionally, location. You can use both type and location in authentication and authorization policies to implement differentiated access based on type and location of switches and WLCs.
+
+
+Scrolling down the configuration dialog screen (not shown in the figure), you need to check the RADIUS Authentication Settings check box and specify RADIUS shared secret.
+
+You would use the same procedure to add Cisco WLC as well.
+
+### Explore Cisco ISE Policies
+Cisco ISE uses a hierarchical policy system to control network access. The top level of the policies hierarchy are policy sets, which steer RADIUS authentication requests to the next hierarchical levels. This next level of hierarchy includes authentication policy and authorization policy.
+
+The figure provides an overview of Cisco ISE policies, and policy sets are at the top of this hierarchy. A policy set serves three key, interrelated functions:
+
+- Serves as a container for a logical grouping of authentication and authorization policies.
+- U- ses Boolean conditions to steer RADIUS authentication requests to the appropriate group of policies for network authentication and authorization.
+- Limits authentication session to a set of allowed protocols (or proxy to an external RADIUS server).
+
+
+When creating policy, you may need to group authentication and authorization policies based on some criteria, and you accomplish this task by creating policy sets. For example, the grouping can be based on the following:
+
+- **Use case**: Wireless, wired, or guest access. You might group a set of authentication and authorization policies that are based on use case, as shown in the figure. Wired users use a different set of policies than wireless users.
+- **Location**: You could also create different policies sets for different locations in your organization. You might want users in the main campus to authenticate by using different resources than those in a remote campus. You can use any criteria appropriate to your organization.
+
+As shown in the figure, you create a policy set by configuring three key items: a name, conditions, and a resultant set of allowed protocols. Look at the policy set named **PolSet1**. If a wired user attempts to access the network via a switch, then **PolSet1** is selected. Thus, they will be limited to a set of allowed protocols for authentication; in this case they are allowed to use only MAB or EAP-TLS. They will be authenticated based on the rules contained in **AuthC_Policy1** and authorized to access certain resources via the authorization policy named **AuthZ_Policy1**.
+
+Policy sets are processed "top-down," very much like a typical access list. Because **PolSet1** is listed first, and its conditions are checked first. If those conditions are not met (not a wired user), then **PolSet2** is checked.
+
+The **PolSet2** condition checks if users are connecting over wireless network. If so, then the user may only authenticate via PEAP or EAP-TLS. They are authenticated by the **AuthC_Policy2** rules and authorized based on the rules in **AuthZ_Policy2**.
+
+Policy sets are the top level of the Cisco ISE policy system. They steer RADIUS authentication requests to a set of policies and limit them to a set of allowed protocols. The second level of this hierarchy is composed of the actual policies for authentication and for authorization.
+
+Authentication policies control which databases to check for user credentials, the so-called identity source, or an identity source sequence. Each policy set can have only one authentication policy, but that policy can have multiple rules.
+
+In the figure, **PolSet1**’s authentication policy has two rules, and like policy sets, these rules are processed top-down. Look at the first rule. If the user attempts to authenticate via MAB, then his credentials are checked against a single identity source, the Cisco ISE internal user database. If this condition is not met, then the second rule is checked. If using 802.1X, then an identity source sequence is applied. First, the Active Directory named AD_1 is checked, and then the LDAP database named LDAP_1 is checked.
+
+
+Regardless of the network access method that is used, either MAB or 802.1X, the user or device credentials are checked against the appropriate database. If credentials are valid, the user or device is successfully authenticated. This process is the first part of the AAA (authentication) and determines who the user and/or device is.
+
+The second part of AAA is authorization or defining what is allowed. The authorization policy defines what resources may or may not be accessed, as well as other attributes that can be applied to the session. Authorization policies are also processed top-down and only a single policy can apply to a single session.
+
+In **PolSet1**’s authorization policy, access levels are determined by your Active Directory group membership. If you are a member of the Employees group, then you are given appropriate employee level access. If you are a member of the Contractors group, then your rights are limited to only access a smaller set of resources.
+
+Review this process from the perspective of a user, attempting to access your network:
+
+- Network access services are chosen at the policy set level.
+- Identity sources are chosen at the authentication policy level.
+- Network permissions are chosen at the authorization policy level.
+
+Before configuring an ISE policy set, you need to configure or review the existing allowed protocols object. This object specifies what will be allowed network services, based on the matched conditions inside a policy set.
+
+One allowed protocols object exists by default. The default allowed protocols object generally does not need any configuration changes. The Default Network Access object allows many authentication protocols inside RADIUS, such as the most used EAP types, MAB, and Password Authentication Protocol (PAP). You only need to modify or create a new allowed protocols object if you want to enforce usage of certain EAP types, for example, allow only PEAP-MSCHAPv2 authentication for 802.1X.
+
+For basic ISE deployments, you do not need to configure any policy sets. One exists by default. It matches all RADIUS authentication requests and applies authorization protocols as specified in the Default Network Access allowed protocols object.
+
+The figure displays the default policy set.
+
+
+### Explore Cisco ISE Authentication Policy
+The authentication policy is the next policy level after policy sets and is used to specify the identity source RADIUS authentication request that it will be authenticated against.
+
+The figure shows the relationship among various Cisco ISE services that are related to authentication, authorization, posture, profiling, and guest. This discussion is focused on authentication. Authentication requests are processed immediately after an endpoint attempts to access the network through the NAD. Cisco ISE evaluates contextual information that is related to the particular endpoint’s connection and compares it against the authentication policy conditions. When it finds a match, a particular external or internal ID store is selected (or a sequence of stores are chosen). The user’s credentials are checked against the identity store. Of course, when invalid credentials result in a failed authentication, access is typically denied. Valid credentials result in a successful authentication.
+
+Then the authorization policy is processed, along with the other services, as shown in the figure.
+
+Remember, the policy set defines the protocols that Cisco ISE should use to authenticate devices. The authentication policy defines the identity sources that it should use for authentication.
+
+
+The authentication policy is made of a list of rules. Each authentication rule has three components:
+
+- Name
+- Set of conditions
+- Resulting identity source
+
+The name is any arbitrary name that makes sense to you, perhaps matching some corporate naming convention.
+
+A condition consists of an operand (attribute), an operator (equal to, not equal to, greater than, and so on), and a value. You can create compound conditions composed of one or more simple conditions that are connected by the AND or OR operator. Cisco ISE evaluates the policy condition and then applies the specified result, based on whether the policy evaluation returns a true or a false value.
+
+Cisco ISE allows you to create conditions as individual, reusable policy elements that can be referenced from other rule-based policies.
+
+The top of the figure shows a fairly simple rule named **Ether_Rule**. The condition states: **IF Radius NAS-Port-Type = Ethernet**. If this condition is met, the result is that the Cisco ISE internal user database is used to search for credentials.
+
+
+There is another rule named **TLS_Rule**. This rule strings together two conditions with a Boolean AND operator. If the certificate serial number = 74501742, AND the Network Access EAP Authentication Type = EAP-TLS, then a sequence of servers can be checked for credentials. The actual servers to be checked are defined in an identity source sequence named **All_User_ID_Stores**.
+
+Notice that the attribute has the format **DICTIONARY:dictionary-attribute**. The word **Certificate** is a dictionary. Inside that dictionary are a list of certificate-related attributes.
+
+The next object that is used by Cisco ISE authentication policy are identity sources. An identity source is used to validate the user credentials during authentication.
+
+Cisco ISE integrates with external identity sources to validate user credentials during authentication. Identity sources are also used to retrieve group information and other user attributes for authorization. Cisco ISE supports several commonly implemented identity sources, including Microsoft Active Directory and LDAP.
+
+Identity sources can be listed in an identity source sequence. When specified, Cisco ISE searches these identity sources in the order in which they are defined.
+
+Cisco ISE maintains internal databases that can be used as identity sources during the authentication process. The internal user database is commonly used to support guest logins. The internal endpoint database is primarily used for MAB and can be populated manually or using the Cisco ISE profiler function.
+
+Cisco ISE comes with prebuilt authentication policy that suffices majority of 802.1X deployments. Recall that a policy set contains authentication policy and authorization policy.
+
+
+As seen in the figure, there are two authentication rules. The first one is called MAB and matches RADIUS requests coming from switches (Wired_MAB) or wireless LAN controllers (Wireless_MAB) that use MAB as authentication. Such requests are authenticated against the internal endpoints Cisco ISE database containing MAC addresses.
+
+The second one is called Dot1X and matches RADIUS requests coming from switches (Wired_802.1X) or wireless LAN controllers (Wireless_802.1X) that use 802.1X/EAP as authentication. Such requests are authenticated against the identity source sequence that matches different identity sources in order in which they are defined. Let's examine the identity source sequence.
+
+As you can see in the figure, the identity source sequence contains all identity bases that could potentially contain user authentication credentials (Internal Users, then All_AD_Join_Points, and then Guest Users). All_AD_Join_Points container contains all Microsoft Active Directory domains Cisco ISE is joined to. This is the reason that default configuration of Cisco ISE authentication policy suffices deployments of 802.1X where users are authenticated against Microsoft Active Directory domain.
+
+
+### Configure Basic Cisco ISE Authorization
+What happens after successful authentication, authorization controls client access levels, and authorization is the focus of this discussion.
+
+The process flow on Cisco ISE splits after authentication is complete. Three separate components may be involved in these phases: the posture service, the profiler, and the authorization process. The posture and profiler services can be used in addition to the authentication and authorization services and, if deployed, they may invoke additional information exchange.
+
+
+Similar to authentication, Cisco ISE uses a modular network authorization policy.
+
+A Cisco ISE authorization policy is based on a set of rules. If a particular user and group identity is matched, along with a set of conditions, then an appropriate authorization profile is applied. This profile is pushed from the Cisco ISE node to the NAD to enforce appropriate permissions. Remember that Cisco ISE is an attribute-based policy system, and identity groups are one of the many attributes.
+
+Authorization profiles consist of attributes that are chosen from a set of resources, which is stored in a dictionary. When the compound condition for the specific authorization policy matches, an appropriate profile is applied. Because authorization policies can include compound conditions that map to a single network service rule, these policies can also include a list of authorization checks.
+
+
+Authorization profiles define the permissions that are granted to client sessions and can include these elements, as shown in the previous figure:
+
+- **DACL**: Cisco ISE can push DACLs to an access switch that is applied to a particular user session. Thus, when an entry-level employee connects to a port, they may have very limited access. But when a high-level executive connects to the same port, they receive elevated access. For ports configured in multiauth mode, it is applied per user. The ACL is downloaded once per NAD and can be applied to multiple sessions.
+- **Airespace ACL**: Cisco ISE can reference named ACLs configured on a Cisco WLC. In this way, various users can connect to the same Service Set Identifier (SSID) and gain appropriate access levels.
+- **Web Redirection**: Redirect to a particular portal for further actions such as CWA.
+- **VLAN**: Wired switch ports and wireless SSIDs are configured with a default VLAN. When you attach to that port or SSID, you are assigned to that VLAN. However, when certain users authenticate, Cisco ISE can override this default VLAN and assign certain users to a different VLAN, perhaps based on Active Directory group membership or some other criteria.
+- **Voice Domain Permission**: Endpoint that is placed into the voice domain. Applies to multidomain authorization mode.
+- **Auto Smart Port**: Cisco Auto Smartports technology enables appropriate QoS parameters to be applied to the port according to a template.
+- **Filter ID**: ACL name that is referenced by Cisco ISE. NAD applies a local ACL with this name to the session.
+- **Reauthentication**: Requires reauthentication and specifies a reauthentication timer.
+- **SGT**: Security Group Access (SGA) allows user identity information to be captured and tagged with each data packet. Security Group Access Control Lists (SGACLs) can be implemented at the egress point for some network resource (such as a file server). SGA-based access control allows you to keep the existing logical design at the access layer. With flexible policies and services, you can meet different business requirements without having to redeploy the security controls. This solution tags every packet at the ingress network device and enables the egress network devices to enforce traffic control closest to the destination.
+
+:::note
+The previous list does not include all possible elements, but only the most commons ones.
+:::
+
+The following figure shows an example of some configured authorization policy rules, which reveals how to configure authorization policy rules.
+
+You create a rule name, such as "Active Directory Employee Access." Then you define conditions for the rule. The condition for the top rule states that the user must be a member of the Employees Active Directory group. If the user is a member of this group, a profile named Employee Access is applied. If needed, you can also assign a Security Group as a result of the matched condition.
+
+
+You can see that the profile named Employee Access assigns a downloadable ACL named ACL_EMPLOYEE. And you can see that this ACL denies access to subnet 10.1.30.0 and permits everything else.
+
+As you can see in the example, one authorization rule exists by default. It is called Basic_Authenticated_Access, and it is matched if a user successfully authenticated. By default, the rule references to the Permit Access authorization rule, which allows access to the network without assigning any authorization parameters. Therefore, full access to the network is allowed by default if a user successfully authenticated.
+
+The default authorization rule is not very secure. Usually, you should disable the rule and create a new, more specific authorization rule.
+
+:::note
+The condition presented in the authorization rules above are very simple. In more complicated deployments of 802.1X and Cisco ISE, conditions can be very complex, containing many attributes combined by using logical AND and/or OR operator.
+:::
+
+### Configure Cisco ISE for 802.1X
+In the next demonstration video, you will review the needed configuration to enable Cisco ISE for 802.1X authentication.
+
+The topology that is used for the demo video is shown in the next figure.
+
+You will connect to the web interface of Cisco ISE and configure needed settings for the Cisco ISE to act as the 802.1X authentication server. You will start with setting up a digital certificate that will be used for server-side authentication during PEAP exchange. Then you will configure identity stores. This will include configuring an endpoint identity group for printers and adding a MAC address of the printer to the group. You will also integrate ISE with AD domain in order to authenticate domain users and/or computers. In the next step you will add the switch and WLC to ISE. Finally, you will observe authentication policy and configure authorization policy to enable access for the printer that will authenticate using MAB, and for the employees and contractors that will authenticate using 802.1X.
+
+### Verify MAB Authentication
+In the following demonstration video, you will verify MAB authentication. Both the switch and Cisco ISE are now configured with the needed configuration for 802.1X authentication. The MAC address of the printer was added to the PRINTERS identity group in the previous demonstration video.
+
+You will first connect to the switch and enable the port that connects to the printer. Then you will observe the authentication result on the switch and examine the authentication logs on Cisco ISE.
+
+:::note
+The MAC address of the printer in this demo may not match the MAC address that was added to the PRINTERS group in the previous demo.
+:::
 
 ## Supplicant 802.1X Configuration
 
