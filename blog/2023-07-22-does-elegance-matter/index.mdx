@@ -1,0 +1,71 @@
+---
+title: Shoule be elegance in Python or not?
+authors: [kaizen]
+slug: python/elegance-python
+tags: [python, elegance, tips]
+---
+
+import Highlight from '@site/src/components/Highlight.js';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
+
+While I am not an expert in Python, I always strive to enhance my code during the development process and I believe that everyone should aim to do so as well. As a result of my efforts, I have noticed significant improvements, particularly in terms of code readability and maintainability. Thus, I would like to share some insights on why elegance matters in Python.
+
+:::caution
+These are all subjective things. That means that there is no single right way to write Python code. What works for one person may not work for another.
+If you disagree with anything I say, I encourage you to leave a comment or write me an email. Diversity of opinion is enriching, and I am always happy to learn new things.
+:::
+
+## Introduction
+In software development, there is a common debate about whether elegance matters. Some people believe that the most important thing is to get the job done, regardless of how the code looks. Others believe that code should be elegant, readable, and easy to maintain.
+
+In Python, elegance is often considered to be more important than in other programming languages. This is because Python is a very expressive language, and it is possible to write code that is both concise and readable.
+## The reasons why elegance matters in Python. 
+First, it makes code easier to read and understand. This is important for anyone who needs to work on the code in the future, whether it is the original author or someone else.
+
+Second, elegant code is more likely to be maintainable. This is because it is easier to modify and update. If a piece of code is not elegant, it can be difficult to figure out how it works, and this can make it difficult to make changes.
+
+Third, elegant code is more likely to be reusable. This is because it is easier to understand and adapt to other projects. If a piece of code is not elegant, it can be difficult to use in other contexts.
+## Don't call code unreadable just because you don't understand it
+If you see code that you don't understand, don't be quick to call it unreadable. It's possible that the code is perfectly readable, but you just don't know how to read it.
+
+For example, if you don't know the Assembly Language you might look at an expression and think it's unreadable. But to an AL programmer, the expression is perfectly readable.
+
+<details>
+  <summary>Python vs Assembly Language: </summary>
+<Tabs>
+  <TabItem value="python" label="Python" default>
+  <CodeBlock language="python">{
+    `def add(a, b):
+    return a + b`}</CodeBlock>
+  </TabItem>
+  <TabItem value="assembly" label="Assembly Language">
+    <CodeBlock language="asm">{
+    `add:
+     mov rax, rdi
+     add rax, rsi
+     ret`}</CodeBlock>
+  </TabItem>
+</Tabs>
+</details>
+
+In general, something is unreadable when you know what all the constituent pieces mean, and yet the pieces are put together in a way that doesn't convey the global meaning well. This could be due to the usage of the wrong constituent pieces, because pieces are missing, because there are superfluous pieces, etc.
+
+So, if you see code that you don't understand, don't call it unreadable. Take the time to learn what the different pieces mean, and then you can judge whether the code is well-written or not.
+## When looking back..
+If you are constantly learning, you will eventually look back at your old code and think "I know a better way to do that." If you write simple and elegant code, you will be able to understand your old code quickly and easily, so you can modify it to include the new, improved solution. This will make your code even clearer and more elegant, and the cycle can continue indefinitely.
+
+Idiomatic code is code whose semantics are easy to understand. If you write idiomatic code, you are opening up the doors for future rewrites of your code. This is a good thing, because code that can be changed is code that can be improved over time.
+
+So, the next time you sit down to write some code, ask yourself: do I want to write code that is easy to understand and modify, or do I want to write code that everyone (including my future self) is scared of going near to?
+## A few tips for writing elegant Python code
+Of course, there are times when elegance is not the most important consideration. For example, if you are writing code that will only be used once, then it may not be worth the time to make it elegant. However, in general, elegance is a good thing to strive for in Python.
+
+Here are a few tips for writing elegant Python code:
+
+- Use the right tool for the job. Don't use a complex feature if a simpler one will do the job just as well.
+- Use idiomatic code. This means using the features of the language in the way that they were intended to be used.
+- Keep your code concise. This doesn't mean that you should always write the shortest possible code, but it does mean that you should avoid writing code that is unnecessarily long or complex.
+- Use comments. Comments can help to explain what your code is doing, which can make it easier to read and understand. (optional)
+- Test your code. This will help to ensure that it works as expected, and it will also make it easier to debug if something goes wrong.
