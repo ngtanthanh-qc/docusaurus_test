@@ -181,6 +181,14 @@ const config = {
           autoCollapseCategories: true,
         },
       },
+      zoom: {
+        selector: '.markdown img',
+        background: {
+          light: 'rgb(255, 255, 255)',
+          dark: 'rgb(50, 50, 50)'
+        },
+        config: {}
+      },
     }),
   plugins: [
     [
@@ -203,6 +211,7 @@ const config = {
         containerId: 'GTM-W4JDZ33',
       },
     ],
+    'docusaurus-plugin-image-zoom',
   ],
 };
 module.exports = config;
