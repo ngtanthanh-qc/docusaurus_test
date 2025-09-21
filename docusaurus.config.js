@@ -36,7 +36,51 @@ const config = {
   // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
-    locales: ["en"],
+    locales: ["en", "vi", "zh-CN", "ja", "ko", "es", "fr"],
+    localeConfigs: {
+      en: {
+        label: "English",
+        direction: "ltr",
+        htmlLang: "en-US",
+        calendar: "gregory",
+      },
+      vi: {
+        label: "Tiếng Việt",
+        direction: "ltr",
+        htmlLang: "vi-VN",
+        calendar: "gregory",
+      },
+      "zh-CN": {
+        label: "简体中文",
+        direction: "ltr",
+        htmlLang: "zh-CN",
+        calendar: "gregory",
+      },
+      ja: {
+        label: "日本語",
+        direction: "ltr",
+        htmlLang: "ja-JP",
+        calendar: "gregory",
+      },
+      ko: {
+        label: "한국어",
+        direction: "ltr",
+        htmlLang: "ko-KR",
+        calendar: "gregory",
+      },
+      es: {
+        label: "Español",
+        direction: "ltr",
+        htmlLang: "es-ES",
+        calendar: "gregory",
+      },
+      fr: {
+        label: "Français",
+        direction: "ltr",
+        htmlLang: "fr-FR",
+        calendar: "gregory",
+      },
+    },
   },
   presets: [
     [
@@ -73,11 +117,7 @@ const config = {
       // Replace with your project's social card
       image: "img/social-card.jpg",
       navbar: {
-        title: "Home",
-        logo: {
-          alt: "Site Logo",
-          src: "img/logo.svg",
-        },
+        title: "🏠 Home",
         items: [
           {
             type: "docSidebar",
@@ -86,21 +126,36 @@ const config = {
             label: "Tutorial",
           },
           { to: "/blog", label: "Blog", position: "left" },
+          { to: "/about-me", label: "About", position: "left" },
           {
             type: "search",
             position: "right",
           },
-          // {
-          //   href: 'https://github.com/facebook/docusaurus',
-          //   label: 'GitHub',
-          //   position: 'right',
-          // },
-          // {
-          //   type: 'docsVersionDropdown',
-          // },
-          // {
-          //   type: 'localeDropdown',
-          // },
+          {
+            href: 'https://tanthanh.dev',
+            label: '📄 Resume',
+            position: 'right',
+            target: '_blank',
+          },
+          {
+            href: 'https://github.com/ngtanthanh-qc',
+            label: 'GitHub',
+            position: 'right',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
+            dropdownItemsAfter: [
+              {
+                type: 'html',
+                value: '<hr style="margin: 0.3rem 0;">',
+              },
+              {
+                href: 'https://github.com/ngtanthanh-qc/docusaurus-site/issues',
+                label: 'Help us translate',
+              },
+            ],
+          },
         ],
       },
       footer: {

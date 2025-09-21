@@ -1,0 +1,34 @@
+{
+  "title": {
+    "message": "Trang chủ",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "Logo trang web",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Tutorial": {
+    "message": "Hướng dẫn",
+    "description": "Navbar item with label Tutorial"
+  },
+  "item.label.Blog": {
+    "message": "Blog",
+    "description": "Navbar item with label Blog"
+  },
+  "item.label.About": {
+    "message": "Giới thiệu",
+    "description": "Navbar item with label About"
+  },
+  "item.label.📄 Resume": {
+    "message": "📄 Hồ sơ",
+    "description": "Navbar item with label 📄 Resume"
+  },
+  "item.label.GitHub": {
+    "message": "Github",
+    "description": "Navbar item with label GitHub"
+  },
+  "item.label.Help us translate": {
+    "message": "Giúp chúng tôi dịch",
+    "description": "Navbar item with label Help us translate"
+  }
+}

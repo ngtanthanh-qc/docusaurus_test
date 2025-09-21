@@ -100,3 +100,6 @@ Requires Node.js >= 20.0 (Updated for Vercel deployment compatibility)
 1. Copy `.env.local.example` to `.env.local`
 2. Add your Firebase credentials
 3. Authentication is optional - site will work without Firebase config
+- to memoerize 
+tham khaảo 1 số showcase: https://docusaurus.io/showcase
+caải tieêến phaần thieêết kế, GUI, UI cuủa trang web này cuủa toôi. minuục điích cuủa trang web naày duùng dđể sharing knowledge, block, và learning cuủa toôi.

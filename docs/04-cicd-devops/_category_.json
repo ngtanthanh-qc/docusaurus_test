@@ -1,0 +1,11 @@
+{
+  "label": "🔄 CI/CD & DevOps",
+  "position": 4,
+  "description": "Continuous Integration, Deployment, and DevOps practices for test automation",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "doc",
+    "id": "cicd-devops/intro"
+  }
+}

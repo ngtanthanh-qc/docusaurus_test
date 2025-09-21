@@ -4,52 +4,58 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  icon: string;
   description: JSX.Element;
+  gradient: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'SDET Expertise',
+    icon: '🎯',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Software Development Engineer in Test with expertise in API testing, 
+        web automation, CI/CD pipelines, and test framework development.
       </>
     ),
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'AI/ML Innovation',
+    icon: '🤖',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Exploring AI agents, MCP servers, LLM integration, and building 
+        intelligent automation systems for next-generation testing.
       </>
     ),
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Network Automation',
+    icon: '🌐',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Cisco technologies, pyATS framework, 802.1X authentication, 
+        and enterprise networking solutions with automation focus.
       </>
     ),
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, icon, description, gradient}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
+      <div className={styles.featureCard}>
+        <div className={styles.iconWrapper} style={{background: gradient}}>
+          <span className={styles.icon}>{icon}</span>
+        </div>
+        <div className="text--center padding-horiz--md">
+          <h3 className={styles.featureTitle}>{title}</h3>
+          <p className={styles.featureDescription}>{description}</p>
+        </div>
       </div>
     </div>
   );
@@ -59,11 +65,17 @@ export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
-        {/* <div className="row">
+        <div className={styles.featuresHeader}>
+          <h2 className={styles.featuresTitle}>Why This Platform?</h2>
+          <p className={styles.featuresSubtitle}>
+            A curated collection of technical knowledge and practical insights
+          </p>
+        </div>
+        <div className="row">
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />
           ))}
-        </div> */}
+        </div>
       </div>
     </section>
   );

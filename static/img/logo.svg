@@ -1,38 +1,35 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
- "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="96.000000pt" height="96.000000pt" viewBox="0 0 96.000000 96.000000"
- preserveAspectRatio="xMidYMid meet">
-
-<g transform="translate(0.000000,96.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
-<path d="M246 805 c-3 -10 -19 -15 -42 -15 -31 0 -37 -4 -47 -30 -7 -18 -19
--30 -29 -30 -9 0 -22 -9 -28 -19 -14 -26 -14 -496 0 -522 10 -17 23 -19 159
--19 123 0 150 -3 155 -15 8 -21 124 -21 132 0 5 12 32 15 155 15 136 0 149 2
-159 19 6 12 10 114 10 261 0 246 -5 280 -38 280 -10 0 -22 12 -29 30 l-11 30
--130 0 c-116 0 -132 -2 -156 -21 l-26 -20 -26 20 c-15 12 -41 21 -61 21 -21 0
--36 6 -39 15 -4 10 -21 15 -54 15 -33 0 -50 -5 -54 -15z m84 -70 l0 -65 -30 0
--30 0 0 65 0 65 30 0 30 0 0 -65z m-90 -9 c0 -69 6 -76 60 -76 54 0 60 7 60
-76 0 41 2 44 26 44 15 0 38 -12 55 -29 l29 -29 0 -212 c0 -199 -1 -212 -17
--204 -10 5 -75 10 -145 12 l-128 3 0 230 0 229 30 0 c29 0 30 -2 30 -44z m538
--188 l2 -227 -127 -3 c-71 -2 -136 -7 -145 -12 -17 -8 -18 5 -18 204 l0 212
-30 29 29 30 113 -3 113 -3 3 -227z m-626 -65 l3 -238 143 -5 c138 -5 144 -6
-163 -30 l19 -25 19 25 c19 24 25 25 163 30 l143 5 3 238 c2 184 5 238 15 234
-9 -3 12 -65 12 -258 l0 -254 -152 -3 c-127 -2 -153 -5 -153 -17 0 -11 -13 -15
--50 -15 -37 0 -50 4 -50 15 0 12 -26 15 -152 17 l-153 3 -3 245 c-2 247 -1
-270 18 270 6 0 11 -86 12 -237z m279 -203 l24 -19 -137 -1 c-131 0 -138 1
--138 20 0 19 7 20 114 20 98 0 117 -3 137 -20z m349 0 c0 -19 -7 -20 -137 -20
-l-138 1 24 19 c20 17 39 20 137 20 107 0 114 -1 114 -20z"/>
-<path d="M240 600 c0 -6 32 -10 75 -10 43 0 75 4 75 10 0 6 -32 10 -75 10 -43
-0 -75 -4 -75 -10z"/>
-<path d="M240 540 c0 -6 32 -10 75 -10 43 0 75 4 75 10 0 6 -32 10 -75 10 -43
-0 -75 -4 -75 -10z"/>
-<path d="M570 660 c0 -6 32 -10 75 -10 43 0 75 4 75 10 0 6 -32 10 -75 10 -43
-0 -75 -4 -75 -10z"/>
-<path d="M570 600 c0 -6 32 -10 75 -10 43 0 75 4 75 10 0 6 -32 10 -75 10 -43
-0 -75 -4 -75 -10z"/>
-<path d="M570 540 c0 -6 32 -10 75 -10 43 0 75 4 75 10 0 6 -32 10 -75 10 -43
-0 -75 -4 -75 -10z"/>
-</g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="16" cy="16" r="15" fill="url(#bgGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  
+  <!-- Document/Book icon -->
+  <g transform="translate(8, 7)">
+    <!-- Main document -->
+    <rect x="2" y="2" width="12" height="16" rx="1" fill="url(#iconGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+    
+    <!-- Document lines -->
+    <line x1="4" y1="6" x2="12" y2="6" stroke="rgba(102,126,234,0.8)" stroke-width="0.8" stroke-linecap="round"/>
+    <line x1="4" y1="8.5" x2="10" y2="8.5" stroke="rgba(102,126,234,0.6)" stroke-width="0.8" stroke-linecap="round"/>
+    <line x1="4" y1="11" x2="11" y2="11" stroke="rgba(102,126,234,0.6)" stroke-width="0.8" stroke-linecap="round"/>
+    <line x1="4" y1="13.5" x2="9" y2="13.5" stroke="rgba(102,126,234,0.6)" stroke-width="0.8" stroke-linecap="round"/>
+    
+    <!-- Small pen/edit icon -->
+    <g transform="translate(11, 1)">
+      <path d="M1 4 L4 1 L5 2 L2 5 Z" fill="#ffd700" stroke="rgba(255,215,0,0.8)" stroke-width="0.3"/>
+      <circle cx="4.5" cy="0.5" r="0.8" fill="#ff6b6b"/>
+    </g>
+  </g>
 </svg>

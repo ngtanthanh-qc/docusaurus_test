@@ -1,0 +1,34 @@
+{
+  "title": {
+    "message": "主页",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "网站Logo",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Tutorial": {
+    "message": "教程",
+    "description": "Navbar item with label Tutorial"
+  },
+  "item.label.Blog": {
+    "message": "博客",
+    "description": "Navbar item with label Blog"
+  },
+  "item.label.About": {
+    "message": "关于",
+    "description": "Navbar item with label About"
+  },
+  "item.label.📄 Resume": {
+    "message": "📄 简历",
+    "description": "Navbar item with label 📄 Resume"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  },
+  "item.label.Help us translate": {
+    "message": "帮助我们翻译",
+    "description": "Navbar item with label Help us translate"
+  }
+}

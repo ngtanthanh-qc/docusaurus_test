@@ -1,0 +1,11 @@
+{
+  "label": "🌐 Networking",
+  "position": 5,
+  "description": "Cisco technologies, network automation, and enterprise networking solutions",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "doc",
+    "id": "networking/intro"
+  }
+}

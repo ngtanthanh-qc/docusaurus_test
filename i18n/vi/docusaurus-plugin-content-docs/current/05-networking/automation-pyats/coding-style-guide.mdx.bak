@@ -1,0 +1,140 @@
+---
+SideBar_Pocation: 3
+SideBar_Label: Hướng dẫn phong cách Python
+Slug: /Hướng dẫn nội bộ /Python-Style-Guide
+---
+
+# Tài liệu tham khảo theo phong cách Python
+- [Hoàn thành Hướng dẫn Google Python] (https://google.github.io/styleguide/pyguide.html)
+
+## ví dụ cao điểm
+<chi tiết>
+<Tóm tắt> Đặt tên từ các khuyến nghị của Guido </Tóm tắt>
+<Div>
+<Quy tắc bảng = "Tất cả" Border = "1" Tóm tắt = "Hướng dẫn từ các khuyến nghị của Guido"
+CELLSPACES = "2" cellpadding = "2">
+
+<tr>
+<T> Loại </th>
+<T> công khai </th>
+<T> Nội bộ </th>
+</tr>
+
+<tr>
+<TD> Gói </TD>
+<td> <code> Lower_with_under </code> </td>
+<TD> </TD>
+</tr>
+
+<tr>
+<TD> Mô -đun </td>
+<td> <code> Lower_with_under </code> </td>
+<Td> <code> _lower_with_under </code> </td>
+</tr>
+
+<tr>
+<TD> Các lớp </td>
+<TD> <code> Capwords </code> </td>
+<Td> <code> _capwords </code> </td>
+</tr>
+
+<tr>
+<TD> Ngoại lệ </td>
+<TD> <code> Capwords </code> </td>
+<TD> </TD>
+</tr>
+
+<tr>
+<TD> Chức năng </TD>
+<Td> <code> Lower_with_under () </code> </td>
+<Td> <code> _lower_with_under () </code> </td>
+</tr>
+
+<tr>
+<TD> Hằng số toàn cầu/lớp </TD>
+<Td> <code> caps_with_under </code> </td>
+<Td> <code> _caps_with_under </code> </td>
+</tr>
+
+<tr>
+<TD> Biến toàn cầu/lớp </TD>
+<td> <code> Lower_with_under </code> </td>
+<Td> <code> _lower_with_under </code> </td>
+</tr>
+
+<tr>
+<TD> Các biến thể hiện </td>
+<td> <code> Lower_with_under </code> </td>
+<Td> <code> _lower_with_under </code> (được bảo vệ) </td>
+</tr>
+
+<tr>
+<TD> Tên phương thức </td>
+<Td> <code> Lower_with_under () </code> </td>
+<Td> <code> _lower_with_under () </code> (được bảo vệ) </td>
+</tr>
+
+<tr>
+<td> tham số chức năng/phương thức </td>
+<td> <code> Lower_with_under </code> </td>
+<TD> </TD>
+</tr>
+
+<tr>
+<TD> Các biến cục bộ </td>
+<td> <code> Lower_with_under </code> </td>
+<TD> </TD>
+</tr>
+</Bảng>
+</Div>
+</Chi tiết>
+
+
+<chi tiết>
+<Tóm tắt> Dấu ngoặc đơn </Tóm tắt>
+<Div>
+<pre> <code>
+{`Có: nếu foo:
+thanh()
+Trong khi X:
+x = bar ()
+Nếu x và y:
+thanh()
+Nếu không X:
+thanh()
+# Cho một mục 1 tple, () s rõ ràng hơn so với dấu phẩy.
+Onesie = (foo,)
+trả lại foo
+Trả lại thư rác, đậu
+Trả lại (SPAM, Đậu)
+for (x, y) trong dict.items (): ... `}
+</code> </pre>
+<Br />
+<pre> <code>
+{`Không: if (x):
+thanh()
+Nếu không (x):
+thanh()
+Return (Foo)
+    `}
+</code> </pre>
+</Div>
+</Chi tiết>
+
+```py showLineNumbers
+from collections.abc import Callable
+from typing import ParamSpec, TypeVar
+_P = ParamSpec("_P")
+_T = TypeVar("_T")
+...
+def next(l: list[_T]) -> _T:
+  return l.pop()
+
+def print_when_called(f: Callable[_P, _T]) -> Callable[_P, _T]:
+  # highlight-next-line
+  def inner(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+    print("Function was called")
+    # This will error
+    return f(*args, **kwargs)
+  return inner
+```

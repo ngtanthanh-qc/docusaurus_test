@@ -1,0 +1,11 @@
+{
+  "label": "🎯 Test Automation",
+  "position": 1,
+  "description": "Comprehensive guide to test automation including API testing, web/UI testing, and BDD practices",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "doc",
+    "id": "test-automation/intro"
+  }
+}

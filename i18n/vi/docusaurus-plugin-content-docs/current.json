@@ -1,0 +1,78 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.🎯 Test Automation": {
+    "message": "🎯 Test Automation",
+    "description": "The label for category 🎯 Test Automation in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.📡 API Testing": {
+    "message": "📡 API Testing",
+    "description": "The label for category 📡 API Testing in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🌐 Web & UI Testing": {
+    "message": "🌐 Web & UI Testing",
+    "description": "The label for category 🌐 Web & UI Testing in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🤖 AI/ML & Agents": {
+    "message": "🤖 AI/ML & Agents",
+    "description": "The label for category 🤖 AI/ML & Agents in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🔌 MCP Server": {
+    "message": "🔌 MCP Server",
+    "description": "The label for category 🔌 MCP Server in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🔄 CI/CD & DevOps": {
+    "message": "🔄 CI/CD & DevOps",
+    "description": "The label for category 🔄 CI/CD & DevOps in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🔧 Jenkins": {
+    "message": "🔧 Jenkins",
+    "description": "The label for category 🔧 Jenkins in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🌐 Networking": {
+    "message": "🌐 Networking",
+    "description": "The label for category 🌐 Networking in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.🤖 Network Automation (pyATS)": {
+    "message": "🤖 Network Automation (pyATS)",
+    "description": "The label for category 🤖 Network Automation (pyATS) in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Networking": {
+    "message": "Networking",
+    "description": "The label for category Networking in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.SDA": {
+    "message": "SDA",
+    "description": "The label for category SDA in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.SDA.link.generated-index.description": {
+    "message": "Everything relate to SDA",
+    "description": "The generated-index page description for category SDA in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.CCNA": {
+    "message": "CCNA",
+    "description": "The label for category CCNA in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.CCNA.link.generated-index.description": {
+    "message": "Everything relate to CCNA",
+    "description": "The generated-index page description for category CCNA in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Implementing_Administerng_Cisco_Solution": {
+    "message": "Implementing_Administerng_Cisco_Solution",
+    "description": "The label for category Implementing_Administerng_Cisco_Solution in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Wireless": {
+    "message": "Wireless",
+    "description": "The label for category Wireless in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.802.1X Authentication": {
+    "message": "802.1X Authentication",
+    "description": "The label for category 802.1X Authentication in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.802.1X Authentication.link.generated-index.description": {
+    "message": "Everything relate to 802.1X Authentication",
+    "description": "The generated-index page description for category 802.1X Authentication in sidebar tutorialSidebar"
+  }
+}

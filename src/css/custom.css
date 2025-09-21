@@ -6,27 +6,54 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #667eea;
+  --ifm-color-primary-dark: #5469e5;
+  --ifm-color-primary-darker: #4b5fe3;
+  --ifm-color-primary-darkest: #2e42d8;
+  --ifm-color-primary-light: #7993ef;
+  --ifm-color-primary-lighter: #819af1;
+  --ifm-color-primary-lightest: #a3b6f6;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  
+  /* Custom colors for modern design */
+  --ifm-hero-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --ifm-background-surface-color: #f8f9fa;
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Ubuntu', sans-serif;
+  --ifm-heading-font-family: var(--ifm-font-family-base);
+  --ifm-font-weight-bold: 600;
+  --ifm-heading-font-weight: 700;
+  
+  /* Improved spacing */
+  --ifm-spacing-horizontal: 1.5rem;
+  --ifm-spacing-vertical: 1.5rem;
+  --ifm-paragraph-margin-bottom: 1.25rem;
+  
+  /* Better card design */
+  --ifm-card-background-color: #ffffff;
+  --ifm-card-border-radius: 12px;
+  
+  /* Smooth transitions */
+  --ifm-transition-fast: 0.2s;
+  --ifm-transition-slow: 0.4s;
+  --ifm-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #818cf8;
+  --ifm-color-primary-dark: #6366f1;
+  --ifm-color-primary-darker: #5558ed;
+  --ifm-color-primary-darkest: #3134d4;
+  --ifm-color-primary-light: #9fa6fb;
+  --ifm-color-primary-lighter: #adb4fc;
+  --ifm-color-primary-lightest: #d9dcfe;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  
+  --ifm-background-color: #0f172a;
+  --ifm-background-surface-color: #1e293b;
+  --ifm-card-background-color: #1e293b;
+  --ifm-hero-background-color: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
 .code-block-error-line {
@@ -35,4 +62,156 @@
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
   border-left: 3px solid #ff000080;
+}
+
+/* Global enhancements */
+* {
+  transition: color var(--ifm-transition-fast) var(--ifm-transition-timing),
+              background-color var(--ifm-transition-fast) var(--ifm-transition-timing),
+              border-color var(--ifm-transition-fast) var(--ifm-transition-timing);
+}
+
+/* Improved navbar */
+.navbar {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme='dark'] .navbar {
+  background-color: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.navbar__title {
+  font-weight: 800;
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, #4facfe 50%, var(--ifm-color-primary-dark) 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+  animation: gradientShift 3s ease-in-out infinite;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+}
+
+[data-theme='dark'] .navbar__title {
+  background: linear-gradient(135deg, #818cf8 0%, #06b6d4 50%, #6366f1 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+.navbar__title:hover {
+  transform: scale(1.08);
+  animation-duration: 1s;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+
+/* Better buttons */
+.button {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all var(--ifm-transition-fast) var(--ifm-transition-timing);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+/* Card improvements */
+.card {
+  border-radius: var(--ifm-card-border-radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all var(--ifm-transition-fast) var(--ifm-transition-timing);
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Documentation sidebar improvements */
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--ifm-color-emphasis-200);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  border-right-color: var(--ifm-color-emphasis-300);
+}
+
+/* Better code blocks */
+pre {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] pre {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Improved footer */
+.footer {
+  background: linear-gradient(180deg, 
+    var(--ifm-background-surface-color) 0%, 
+    var(--ifm-background-color) 100%);
+}
+
+.footer__title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Search bar improvements */
+.navbar__search-input {
+  border-radius: 8px;
+  background-color: var(--ifm-background-surface-color);
+}
+
+/* Blog improvements */
+.avatar__photo {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+article header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus styles */
+*:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

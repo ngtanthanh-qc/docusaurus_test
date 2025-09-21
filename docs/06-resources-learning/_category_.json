@@ -1,0 +1,11 @@
+{
+  "label": "📚 Resources & Learning",
+  "position": 6,
+  "description": "Curated tools, libraries, learning paths, and best practices for developers and testers",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "doc",
+    "id": "resources-learning/intro"
+  }
+}

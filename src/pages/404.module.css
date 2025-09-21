@@ -1,0 +1,447 @@
+.container {
+  min-height: calc(100vh - 60px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme='dark'] .container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.backgroundAnimation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+.floatingCode,
+.floatingCode2,
+.floatingCode3 {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  font-size: 1.5rem;
+  color: white;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floatingCode {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floatingCode2 {
+  top: 70%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.floatingCode3 {
+  bottom: 30%;
+  left: 60%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+.errorCode {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.glitch {
+  font-size: 10rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(102, 126, 234, 0.5),
+    0 0 30px rgba(102, 126, 234, 0.5),
+    0 0 40px rgba(102, 126, 234, 0.5);
+  margin: 0;
+  position: relative;
+  animation: glitch 2s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  animation: glitch-1 0.5s infinite;
+  color: #00ffff;
+  z-index: -1;
+}
+
+.glitch::after {
+  animation: glitch-2 0.5s infinite;
+  color: #ff00ff;
+  z-index: -2;
+}
+
+@keyframes glitch {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(255, 255, 255, 0.5),
+      0 0 20px rgba(102, 126, 234, 0.5),
+      0 0 30px rgba(102, 126, 234, 0.5);
+  }
+  50% {
+    text-shadow: 
+      0 0 10px rgba(255, 255, 255, 0.8),
+      0 0 25px rgba(102, 126, 234, 0.8),
+      0 0 35px rgba(102, 126, 234, 0.8);
+  }
+}
+
+@keyframes glitch-1 {
+  0%, 100% {
+    clip: rect(42px, 9999px, 44px, 0);
+    transform: skew(0.5deg);
+  }
+  50% {
+    clip: rect(12px, 9999px, 59px, 0);
+    transform: skew(0.8deg);
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    clip: rect(25px, 9999px, 90px, 0);
+    transform: skew(0.8deg);
+  }
+  50% {
+    clip: rect(65px, 9999px, 119px, 0);
+    transform: skew(0.2deg);
+  }
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    top: 0%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+.errorInfo {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.message {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.terminal {
+  background: #1e1e1e;
+  border-radius: 8px;
+  margin: 2rem auto;
+  max-width: 600px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.terminalHeader {
+  background: #2d2d2d;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.terminalButton {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminalTitle {
+  margin-left: auto;
+  color: #888;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+}
+
+.terminalBody {
+  padding: 1rem;
+  font-family: 'Courier New', monospace;
+  color: #0f0;
+  background: #0a0a0a;
+  min-height: 200px;
+}
+
+.terminalLine {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  animation: typewriter 0.5s steps(40) forwards;
+}
+
+.terminalPrompt {
+  color: #4fc3f7;
+  font-weight: bold;
+}
+
+.errorText {
+  color: #ff5252;
+}
+
+.terminalCursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  color: white;
+  text-decoration: none;
+}
+
+.suggestions {
+  margin-top: 4rem;
+  animation: fadeIn 1s ease-out 0.5s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.suggestionsTitle {
+  color: white;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.suggestionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.suggestionCard {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.suggestionCard:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-decoration: none;
+}
+
+.suggestionIcon {
+  font-size: 2rem;
+}
+
+.suggestionText {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.easteregg {
+  margin-top: 3rem;
+  opacity: 0.7;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .glitch {
+    font-size: 6rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .message {
+    font-size: 1rem;
+  }
+  
+  .terminal {
+    margin: 1rem;
+  }
+  
+  .terminalBody {
+    font-size: 0.85rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .suggestionGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .glitch {
+    font-size: 4rem;
+  }
+  
+  .floatingCode,
+  .floatingCode2,
+  .floatingCode3 {
+    font-size: 1rem;
+  }
+  
+  .suggestionGrid {
+    grid-template-columns: 1fr;
+  }
+}

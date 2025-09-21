@@ -1,0 +1,10 @@
+{
+  "label": "Docusaurus Testing",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Comprehensive demonstration of Markdown and MDX features in Docusaurus. Learn how to create interactive documentation with React components."
+  },
+  "collapsible": true,
+  "collapsed": false
+}

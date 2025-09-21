@@ -1,0 +1,11 @@
+{
+  "label": "🤖 AI/ML & Agents",
+  "position": 2,
+  "description": "Explore AI agents, MCP servers, machine learning, and agent-to-agent communication",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "doc",
+    "id": "ai-ml-agents/intro"
+  }
+}

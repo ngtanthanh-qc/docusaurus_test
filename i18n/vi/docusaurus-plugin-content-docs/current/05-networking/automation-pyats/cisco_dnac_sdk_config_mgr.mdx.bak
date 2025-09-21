@@ -1,0 +1,236 @@
+---
+SideBar_Pocation: 5
+Tiêu đề: Trình quản lý cấu hình trung tâm DNA của Cisco
+# slug:/nội bộ/ccna/không dây/xác định-radius-server-beable-snmp-syslog
+Tags:
+- Cisco
+- Tự động hóa
+- Pyats
+- Dachistk
+---
+
+Nhập điểm nổi bật từ '@site/src/các thành phần/điểm nổi bật';
+Nhập các tab từ '@chủ đề/tab';
+Nhập tabitem từ '@ chủ đề / tabitem';
+Nhập CodeBlock từ '@Theme/CodeBlock';
+
+## Giới thiệu
+Những gì bạn sẽ biết
+- Giới thiệu về SDK của Trung tâm DNA Cisco
+- Hiểu lệnh và sử dụng lệnh
+- Mã Trình quản lý cấu hình
+
+Những gì bạn sẽ cần
+
+- Thiết lập [Python 3.x] (https://www.python.org/doads/)
+- Sử dụng IDE của bạn [Lựa chọn] (https://code.visualstudio.com/)
+- Cài đặt [Cisco DNA Center SDK] (https://dnacenterersdk.readthedocs.io/en/latest/)
+-Truy cập một trường hợp trung tâm DNA của Cisco] (https://devnetsandbox.cisco.com/rm/diagram/index/c3c949dc-30af-498b-9d77-4f1c07d835f9?diagr
+
+## Trung tâm DNA SDK Các bước đầu tiên
+Cài đặt SDK trung tâm DNA
+
+Giống như bất kỳ API hoặc công cụ nào, điểm dừng đầu tiên của bạn là kiểm tra tài liệu:
+
+- [Cisco DNA Center SDK DOC] (https://dnacenterersdk.readthedocs.io/en/latest/)
+! [] (./ img/sdk_config.jpg)
+
+- Cài đặt SDK rất đơn giản.Trong thiết bị đầu cuối của bạn, thực hiện:
+
+```bash
+pip install dnacentersdk
+```
+
+Bắt đầu nhanh: Hãy xác thực bằng SDK
+
+Theo mặc định, SDK trung tâm DNA sẽ tìm kiếm các biến môi trường sau để tạo các đối tượng kết nối mới:
+- ** DNA_Center_username **: HTTP BASIC Authame Tên
+- ** DNA_Center_Password **: HTTP Mật khẩu Auth Basic Auth
+- ** DNA_CENTER_BASE_URL **: URL cơ sở được đặt tiền tố vào các hậu tố điểm cuối API riêng lẻ
+
+** Trong trường hợp của chúng tôi, chúng tôi sẽ không sử dụng các biến môi trường.Chúng tôi sẽ thêm nó vào một phần của mã Python của chúng tôi. **
+
+Hãy bắt đầu!
+
+1. ** Bản sao mã repo. **
+
+Trong thiết bị đầu cuối của bạn, chạy:
+```bash
+git clone https://github.com/CiscoLearning/dnac-config-manager.git
+```
+Python khởi đầu ở chế độ tương tác:
+```bash
+python3
+```
+- Bạn có thể sao chép và dán đoạn mã Python trong khi ở chế độ tương tác Python.*
+
+2. ** Nhập SDK trung tâm DNA. **
+```python
+from dnacentersdk import DNACenterAPI
+```
+3. ** Xác định chuỗi kết nối. **
+
+Trong trường hợp này, chúng tôi sẽ tạo một từ điển ** python ** với chuỗi kết nối:
+```python
+dnac_creds = {}
+dnac_creds['url'] = 'https://sandboxdnac.cisco.com'
+dnac_creds['username'] = 'devnetuser'
+dnac_creds['password'] = 'Cisco123!'
+```
+4. ** Bắt đầu "Đối tượng kết nối." **
+```python
+dnac = DNACenterAPI(username=dnac_creds['username'], password=dnac_creds['password'], base_url=dnac_creds['url'], verify=False)
+```
+5. ** Hiển thị mã thông báo auth của bạn. **
+```python
+print("Auth Token: ", dnac.access_token)
+```
+6. ** Hãy xem tập lệnh đã hoàn thành. **
+
+Truy cập thư mục làm việc từ repo nhân bản của chúng tôi và chạy tệp `xác thực.py`:
+```bash
+cd dnac-config-manager/
+ls -al
+```
+7. ** Chạy nó. **
+```bash
+python Authentication.py
+```
+## Bộ chỉ huy là gì?
+** Bây giờ chúng tôi có một sự hiểu biết về cách thức hoạt động của SDK của Trung tâm DNA và chúng tôi đã xác thực, hãy xây dựng trường hợp sử dụng của chúng tôi! **
+
+Sử dụng định nghĩa trường hợp
+
+Tôi muốn có thể chụp ảnh tất cả các cấu hình thiết bị để phát hiện độ trôi cấu hình và có hình ảnh vàng.
+
+Sử dụng quy trình làm việc trường hợp
+- Xác thực
+- Nhận danh sách tất cả các thiết bị mạng được quản lý
+- Sử dụng Bộ chạy lệnh để truy xuất cấu hình đang chạy
+- Lưu vào một tệp
+
+! [] (./ img/cmd_runner.jpg)
+
+Người chạy bộ chỉ huy là gì?
+
+Bộ chỉ huy là một tính năng trong Trung tâm DNA của Cisco cho phép bạn thực hiện một số ít các lệnh Cisco iOS chỉ đọc (hiện tại) trên các thiết bị được quản lý bởi Trung tâm DNA.
+
+Dưới đây là cách bạn có thể nhận được danh sách tất cả các lệnh Cisco IOS được hỗ trợ:
+```python
+commands = dnac.command_runner.get_all_keywords_of_clis_accepted()
+```
+Các cuộc gọi API trung tâm DNA của Cisco không đồng bộ, điều đó có nghĩa là đối với mỗi tác vụ được thực hiện, ID tác vụ được tạo.Sau khi hoàn thành nhiệm vụ, nội dung có thể được lấy từ điểm cuối /tệp.
+
+Các điểm cuối API mà chúng tôi đang lên kế hoạch sử dụng:
+
+- Post/DNA/System/API/V1/Auth/mã thông báo
+- Nhận/DNA/Ý định/API/V1/thiết bị mạng
+-Post/DNA/Intent/API/V1/Mạng-Device-Poller/CLI/Read-Request
+- GET/DNA/INTENT/API/V1/TASK/`{TASK_ID}`
+- GET/DNA/INTENT/API/V1/FILE/`{FILE_ID}`
+
+Các phương pháp SDK mà chúng tôi đang lên kế hoạch sử dụng:
+
+- [Xác thực] (https://dnacenterersdk.readthedocs.io/en/latest/api/api.html#dnacenterersdk.api.authentication.Authentication)
+- [thiết bị.get_device_list ()] (https://dnacenterersdk.readthedocs.io/en/latest/api/api.html#dnacenterersdk.api.v1_3.devices.devices.get_device
+-[lệnh_runner.run_read_only_commands_on_devices ()] (https://dnacentersdk.readthedocs.io/en/latest/API/api.html#dnacentersdk.api.v1_3_0.command_runner.commandrunner.run_read_only_commands_on_devices)
+- [Task.get_task_by_id ()] (https://dnacenterersdk.readthedocs.io/en/latest/api/api.html#dnacentersdk.api.v1_2_10.task.task.get_task_count)
+- [file.download_a_file_by_fileid ()] (https://dnacenterersdk.readthedocs.io/en/latest/api/api.html#dnacentersdk.api.v1_2_10.file.file.download_file_file
+
+Hãy mã hóa nó!
+## Cấu hình mã hóa.giám đốc
+Trường hợp sử dụng mã
+
+Sao lưu cấu hình thiết bị
+
+! [] (./ img/cmd_runner.jpg)
+
+0. ** Sử dụng IDE của bạn, hãy tạo tệp '.py' mới và thư viện nhập
+
+Nhấp vào ký tên + bên cạnh thư mục nhân bản ciscolive-devwks-2107:
+```python
+from dnacentersdk import DNACenterAPI
+import json
+import warnings
+```
+1. ** Xác thực. **
+
+Đến bây giờ, chúng tôi biết làm thế nào để làm điều này.Chúng ta cần chuyển thông minh cơ bản và nắm bắt mã thông báo API của chúng tôi.
+
+** Sao chép bước này vào trình soạn thảo cuối cùng;Điều này cần phải ở cuối tệp. **
+```python
+if __name__ == '__main__':
+    dnac_creds = {}
+    dnac_creds['url'] = 'https://sandboxdnac.cisco.com'
+    dnac_creds['username'] = 'devnetuser'
+    dnac_creds['password'] = 'Cisco123!'
+
+    dnac = DNACenterAPI(username=dnac_creds['username'], password=dnac_creds['password'], base_url=dnac_creds['url'],
+                        verify=False)
+    print("Auth Token: ", dnac.access_token)
+    print("Gathering Device Info ... \n")
+    get_device_list()
+```
+2. ** Lấy một danh sách các thiết bị. **
+
+Sử dụng lớp thiết bị để gọi phương thức `get_device_list ()` để truy xuất danh sách tất cả các thiết bị được quản lý.
+
+Sau 200 OK, lặp qua danh sách `Công tắc và trung tâm` và trích xuất ID thiết bị.Chúng ta cần tận dụng nó để chạy lệnh trên mỗi thiết bị.
+
+Truy cập biến ID thiết bị thông qua `device.id` và chuyển nó đến và gọi hàm` cmd_run () `(chúng tôi sẽ xây dựng tiếp theo).
+
+** Chú ý bất cứ điều gì? **
+```python
+"""
+This function handles getting device list
+"""
+def get_device_list():
+    devices = dnac.devices.get_device_list()
+    devicesuid_list = []
+    for device in devices.response:
+        if device.family == 'Switches and Hubs':
+            print("Managed Device IP: {} ".format(device.managementIpAddress))
+            devicesuid_list.append(device.id)
+    print("\n")
+    cmd_run(devicesuid_list)
+```
+
+3. ** Bắt đầu lệnh Lệnh. **
+
+Khi chúng tôi lặp lại trên mỗi thiết bị, chúng tôi sẽ cần thực hiện lệnh `show chạy`.Để làm như vậy, hãy sử dụng lớp `Command_runner` và gọi` đọc Run_Read_only_Commands_on_Devices () `Phương thức.Phương thức này yêu cầu hai đầu vào của danh sách loại: `` ra lệnh` và `deviceUuids`.
+
+Sau khi thực hiện, Trung tâm DNA sẽ trả về một `na -rốc` (không đồng bộ, hãy nhớ?).
+
+Kiểm tra tiến trình của nó thông qua lớp `nhiệm vụ` bằng cách gọi phương thức` get_task_by_id () `.Khi nhiệm vụ đã được thực hiện thành công (bạn có thể sử dụng xử lý lỗi tích hợp trong SDK để kiểm tra, nhưng đó là một bài đăng trên blog khác), hãy lấy `fileid` trả về.
+
+Bây giờ, chỉ cần truy cập lớp `file` và gọi` download_a_file_by_fileid () `phương thức ... và voila!
+
+```python
+"""
+This function handles command runner execution
+"""
+def cmd_run(device_list):
+    for device in device_list:
+        print("Executing Command on {}".format(device))
+        run_cmd = dnac.command_runner.run_read_only_commands_on_devices(commands=["show run"], deviceUuids=[device])
+        print("Task started! Task ID is {}".format(run_cmd.response.taskId))
+        task_info = dnac.task.get_task_by_id(run_cmd.response.taskId)
+        task_progress = task_info.response.progress
+        print("Task Status : {}".format(task_progress))
+        while task_progress == 'CLI Runner request creation':
+            task_progress = dnac.task.get_task_by_id(run_cmd.response.taskId).response.progress
+        task_progress= json.loads(task_progress)
+        cmd_output = dnac.file.download_a_file_by_fileid(task_progress['fileId'], dirpath='file.json', save_file=True)
+        print("Saving config for device ... \n")
+```
+
+Chạy nó!
+
+Đây là một ví dụ tuyệt vời về quản lý cấu hình.Bạn có thể sử dụng điều này như một cơ sở để bắt đầu xây dựng một công cụ giám sát trôi cấu hình đơn giản, cho rằng cấu hình được trả về dưới dạng dữ liệu JSON.Chúng tôi có thể dễ dàng sử dụng truy vấn JSON để kiểm tra bất kỳ sự trôi dạt cấu hình nào và tự động chuyển lại nó thành cấu hình gốc.
+
+Điều này có thể được thực hiện một bước xa hơn ngay cả bằng cách tận dụng Git để điều khiển phiên bản cấu hình thiết bị của bạn.
+
+## Tài liệu tham khảo:
+
+-N
+-[Chứng nhận Enauto] (https://www.cisco.com/c/en/us/training-events/training-certification/exams/civerse-list/enauto-300-435.html)
