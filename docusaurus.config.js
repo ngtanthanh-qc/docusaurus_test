@@ -36,7 +36,7 @@ const config = {
   // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "vi", "zh-CN", "ja", "ko", "es", "fr"],
+    locales: ["en", "vi"],
     localeConfigs: {
       en: {
         label: "English",
@@ -48,36 +48,6 @@ const config = {
         label: "Tiếng Việt",
         direction: "ltr",
         htmlLang: "vi-VN",
-        calendar: "gregory",
-      },
-      "zh-CN": {
-        label: "简体中文",
-        direction: "ltr",
-        htmlLang: "zh-CN",
-        calendar: "gregory",
-      },
-      ja: {
-        label: "日本語",
-        direction: "ltr",
-        htmlLang: "ja-JP",
-        calendar: "gregory",
-      },
-      ko: {
-        label: "한국어",
-        direction: "ltr",
-        htmlLang: "ko-KR",
-        calendar: "gregory",
-      },
-      es: {
-        label: "Español",
-        direction: "ltr",
-        htmlLang: "es-ES",
-        calendar: "gregory",
-      },
-      fr: {
-        label: "Français",
-        direction: "ltr",
-        htmlLang: "fr-FR",
         calendar: "gregory",
       },
     },
