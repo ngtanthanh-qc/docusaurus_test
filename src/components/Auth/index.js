@@ -10,25 +10,45 @@ import { Login } from "../Login";
 import Loading from "../Loading";
 import { BASE, LOGOUT_PATH, LOGIN_PATH, PROTECTED_PATHS } from "../../utils/constants";
 
-firebase.initializeApp(firebaseConfig);
+let auth = null;
 
-export const auth = getAuth();
+try {
+    if (firebaseConfig && firebaseConfig.apiKey) {
+        firebase.initializeApp(firebaseConfig);
+        auth = getAuth();
+    }
+} catch (error) {
+    console.warn('Firebase initialization failed. Authentication will be disabled.', error);
+}
+
+export { auth };
 
 export function AuthCheck({ children }) {
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
+        if (!auth) {
+            setAuthLoading(false);
+            return;
+        }
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
             setAuthLoading(false);
         });
-    });
+        
+        return () => unsubscribe();
+    }, []);
 
     const location = useLocation();
     let from = location.pathname;
 
     if (authLoading) return <Loading />;
+    
+    if (!auth) {
+        return children;
+    }
 
     if (user?.email) {
         if (from === LOGOUT_PATH) {

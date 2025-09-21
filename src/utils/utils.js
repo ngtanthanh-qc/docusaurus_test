@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import firebase from "firebase/compat/app";
 import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../components/Auth';
 
 import { useThemeConfig } from '@docusaurus/theme-common';
 
@@ -11,10 +11,16 @@ export function useNavbarItems() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        onAuthStateChanged(firebase.auth(), (user) => {
+        if (!auth) {
+            return;
+        }
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
         });
-    });
+        
+        return () => unsubscribe();
+    }, []);
 
     let label, to;
     if (user) {

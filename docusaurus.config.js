@@ -4,8 +4,8 @@
 const {themes} = require('prism-react-renderer');
 const lightTheme = themes.github;
 const darkTheme = themes.dracula;
-const math = require("remark-math");
-const katex = require("rehype-katex");
+const { default: math } = require("remark-math");
+const { default: katex } = require("rehype-katex");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -48,8 +48,9 @@ const config = {
         },
         blog: {
           showReadingTime: true,
-          remarkPlugins: [math],
-          rehypePlugins: [katex],
+          remarkPlugins: [[math, {strict: false}]],
+          rehypePlugins: [[katex, {strict: false, throwOnError: false}]],
+          onUntruncatedBlogPosts: 'ignore',
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),

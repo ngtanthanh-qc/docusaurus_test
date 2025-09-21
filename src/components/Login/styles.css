@@ -1,3 +1,74 @@
 .auth-wrapper {
-    margin: auto 10px;
-  }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.login-container {
+    background: var(--ifm-background-color);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-container input {
+    padding: 0.75rem;
+    border: 1px solid var(--ifm-toc-border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    background: var(--ifm-background-surface-color);
+    color: var(--ifm-font-color-base);
+}
+
+.login-container button {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: var(--ifm-color-primary);
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.login-container button:hover {
+    background-color: var(--ifm-color-primary-darker);
+}
+
+.google-signin-btn {
+    background-color: #4285f4 !important;
+    margin-top: 1rem;
+}
+
+.google-signin-btn:hover {
+    background-color: #357ae8 !important;
+}
+
+.divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    color: var(--ifm-color-secondary);
+}
+
+.error-message {
+    background-color: var(--ifm-color-danger-contrast-background);
+    color: var(--ifm-color-danger);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
