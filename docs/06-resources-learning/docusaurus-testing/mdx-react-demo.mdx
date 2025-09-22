@@ -159,9 +159,19 @@ export const AlertBox = ({type, title, children}) => {
 
 Welcome to the **advanced MDX demonstration** page! This showcases the power of combining Markdown with React components.
 
-<Highlight color="#25c2a0">
-  MDX = Markdown + JSX ✨
-</Highlight>
+<div style={{
+  background: 'linear-gradient(135deg, #25c2a0 0%, #667eea 100%)',
+  padding: '15px 25px',
+  borderRadius: '10px',
+  color: 'white',
+  fontSize: '1.2rem',
+  fontWeight: 'bold',
+  textAlign: 'center',
+  margin: '20px 0',
+  boxShadow: '0 4px 15px rgba(37, 194, 160, 0.3)'
+}}>
+  ✨ MDX = Markdown + JSX ✨
+</div>
 
 <TOCInline toc={toc} />
 
@@ -339,7 +349,7 @@ Choose your OS above, and the selection will sync across all tab groups with the
 ### Live Code Editor (JavaScript/React Only)
 
 <AlertBox type="info" title="Live Code Limitations">
-  Docusaurus Live Code Editor chỉ hỗ trợ **JavaScript/React**. Python cần các tools khác như Pyodide hoặc external sandboxes.
+  Docusaurus Live Code Editor only supports **JavaScript/React**. Python requires additional tools like Pyodide or external sandboxes.
 </AlertBox>
 
 **React Live Code Example:**
@@ -495,7 +505,7 @@ function Calculator() {
 ### Python Code Support 🐍
 
 <AlertBox type="warning" title="Python Live Code Limitation">
-  Docusaurus **không hỗ trợ Python live code** mặc định. Chỉ có **static syntax highlighting** cho Python.
+  Docusaurus **does not support Python live code** by default. Only **static syntax highlighting** is available for Python.
 </AlertBox>
 
 **Static Python Code Example:**
@@ -650,7 +660,7 @@ flowchart TD
 
 ### Inline Math Examples
 
-The quadratic formula: $x = \frac&#123;-b \pm \sqrt&#123;b^2-4ac&#125;&#125;&#123;2a&#125;$
+The quadratic formula: $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$
 
 Einstein's mass-energy equivalence: $E = mc^2$
 
@@ -660,22 +670,22 @@ Pythagorean theorem: $a^2 + b^2 = c^2$
 
 **Gaussian Integral:**
 $$
-\int_&#123;-\infty&#125;^&#123;\infty&#125; e^&#123;-x^2&#125; dx = \sqrt&#123;\pi&#125;
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
 $$
 
 **Euler's Identity:**
 $$
-e^&#123;i\pi&#125; + 1 = 0
+e^{i\pi} + 1 = 0
 $$
 
 **Maxwell's Equations:**
 $$
-\begin&#123;aligned&#125;
-\nabla \times \vec&#123;E&#125; &= -\frac&#123;\partial \vec&#123;B&#125;&#125;&#123;\partial t&#125;\\
-\nabla \times \vec&#123;B&#125; &= \mu_0\vec&#123;J&#125; + \mu_0\epsilon_0\frac&#123;\partial \vec&#123;E&#125;&#125;&#123;\partial t&#125;\\
-\nabla \cdot \vec&#123;E&#125; &= \frac&#123;\rho&#125;&#123;\epsilon_0&#125;\\
-\nabla \cdot \vec&#123;B&#125; &= 0
-\end&#123;aligned&#125;
+\begin{aligned}
+\nabla \times \vec{E} &= -\frac{\partial \vec{B}}{\partial t}\\
+\nabla \times \vec{B} &= \mu_0\vec{J} + \mu_0\epsilon_0\frac{\partial \vec{E}}{\partial t}\\
+\nabla \cdot \vec{E} &= \frac{\rho}{\epsilon_0}\\
+\nabla \cdot \vec{B} &= 0
+\end{aligned}
 $$
 
 </div>
@@ -834,4 +844,4 @@ This page demonstrates the incredible power of **MDX in Docusaurus**:
   </div>
 </div>
 
-**MDX** là viết tắt của **M**ark**d**own + **J**S**X** - cho phép bạn viết JSX (React components) trực tiếp trong các file Markdown, tạo ra tài liệu tương tác và động.
+**MDX** stands for **M**ark**d**own + **J**S**X** - allowing you to write JSX (React components) directly in Markdown files, creating interactive and dynamic documentation.

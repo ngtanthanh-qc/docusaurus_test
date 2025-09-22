@@ -117,11 +117,13 @@ export default function Home(): JSX.Element {
     <Layout
       title={`Welcome`}
       description="A knowledge sharing platform for technical documentation, networking guides, and automation tutorials">
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
-        <QuickLinks />
-      </main>
+      <div className="homepage-wrapper">
+        <HomepageHeader />
+        <main>
+          <HomepageFeatures />
+          <QuickLinks />
+        </main>
+      </div>
     </Layout>
   );
 }

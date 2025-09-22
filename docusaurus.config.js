@@ -59,6 +59,8 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
+          remarkPlugins: [[math, {strict: false}]],
+          rehypePlugins: [[katex, {strict: false, throwOnError: false}]],
         },
         blog: {
           showReadingTime: true,
