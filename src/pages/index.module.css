@@ -12,6 +12,7 @@
   min-height: 80vh;
   display: flex;
   align-items: center;
+  z-index: 1;
 }
 
 [data-theme='dark'] .heroBanner {
