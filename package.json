@@ -5,6 +5,8 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
+    "start:en": "docusaurus start --locale en --port 3000",
+    "start:vi": "docusaurus start --locale vi --port 3001",
     "build": "docusaurus build",
     "build:en": "docusaurus build --locale en",
     "build:vi": "docusaurus build --locale vi",
