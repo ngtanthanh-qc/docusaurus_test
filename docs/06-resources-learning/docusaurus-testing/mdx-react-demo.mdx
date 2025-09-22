@@ -336,7 +336,13 @@ Choose your OS above, and the selection will sync across all tab groups with the
 
 ## Advanced Code Examples
 
-### Live Code Editor
+### Live Code Editor (JavaScript/React Only)
+
+<AlertBox type="info" title="Live Code Limitations">
+  Docusaurus Live Code Editor chỉ hỗ trợ **JavaScript/React**. Python cần các tools khác như Pyodide hoặc external sandboxes.
+</AlertBox>
+
+**React Live Code Example:**
 
 ```jsx live
 function ColorPicker() {
@@ -381,7 +387,118 @@ function ColorPicker() {
 }
 ```
 
-### Code Block with Custom Component
+**JavaScript Calculator Example:**
+
+```jsx live
+function Calculator() {
+  const [display, setDisplay] = React.useState('0');
+  const [prevValue, setPrevValue] = React.useState(null);
+  const [operation, setOperation] = React.useState(null);
+  const [waitingForOperand, setWaitingForOperand] = React.useState(false);
+
+  const inputNumber = (num) => {
+    if (waitingForOperand) {
+      setDisplay(String(num));
+      setWaitingForOperand(false);
+    } else {
+      setDisplay(display === '0' ? String(num) : display + num);
+    }
+  };
+
+  const calculate = () => {
+    const prev = parseFloat(prevValue);
+    const current = parseFloat(display);
+    
+    if (prev && operation) {
+      const result = {
+        '+': prev + current,
+        '-': prev - current,
+        '*': prev * current,
+        '/': prev / current,
+      }[operation];
+      
+      setDisplay(String(result));
+      setPrevValue(null);
+      setOperation(null);
+      setWaitingForOperand(true);
+    }
+  };
+
+  const performOperation = (nextOperation) => {
+    if (prevValue === null) {
+      setPrevValue(display);
+    } else if (operation) {
+      calculate();
+    }
+    
+    setWaitingForOperand(true);
+    setOperation(nextOperation);
+  };
+
+  const clear = () => {
+    setDisplay('0');
+    setPrevValue(null);
+    setOperation(null);
+    setWaitingForOperand(false);
+  };
+
+  return (
+    <div style={{
+      maxWidth: '300px',
+      margin: '0 auto',
+      padding: '20px',
+      border: '2px solid #667eea',
+      borderRadius: '12px',
+      backgroundColor: '#f8f9fa'
+    }}>
+      <div style={{
+        backgroundColor: '#333',
+        color: 'white',
+        padding: '15px',
+        textAlign: 'right',
+        fontSize: '24px',
+        marginBottom: '15px',
+        borderRadius: '6px',
+        fontFamily: 'monospace'
+      }}>
+        {display}
+      </div>
+      
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px'}}>
+        <button onClick={clear} style={{gridColumn: 'span 2', padding: '15px', fontSize: '16px', backgroundColor: '#ff6b6b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'}}>Clear</button>
+        <button onClick={() => performOperation('/')} style={{padding: '15px', fontSize: '16px', backgroundColor: '#667eea', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'}}>÷</button>
+        <button onClick={() => performOperation('*')} style={{padding: '15px', fontSize: '16px', backgroundColor: '#667eea', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'}}>×</button>
+        
+        {[7,8,9].map(num => (
+          <button key={num} onClick={() => inputNumber(num)} style={{padding: '15px', fontSize: '16px', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer'}}>{num}</button>
+        ))}
+        <button onClick={() => performOperation('-')} style={{padding: '15px', fontSize: '16px', backgroundColor: '#667eea', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'}}>-</button>
+        
+        {[4,5,6].map(num => (
+          <button key={num} onClick={() => inputNumber(num)} style={{padding: '15px', fontSize: '16px', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer'}}>{num}</button>
+        ))}
+        <button onClick={() => performOperation('+')} style={{padding: '15px', fontSize: '16px', backgroundColor: '#667eea', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'}}>+</button>
+        
+        {[1,2,3].map(num => (
+          <button key={num} onClick={() => inputNumber(num)} style={{padding: '15px', fontSize: '16px', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer'}}>{num}</button>
+        ))}
+        <button onClick={calculate} style={{gridRow: 'span 2', padding: '15px', fontSize: '16px', backgroundColor: '#25c2a0', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'}}>=</button>
+        
+        <button onClick={() => inputNumber(0)} style={{gridColumn: 'span 2', padding: '15px', fontSize: '16px', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer'}}>0</button>
+        <button onClick={() => inputNumber('.')} style={{padding: '15px', fontSize: '16px', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer'}}>.</button>
+      </div>
+    </div>
+  );
+}
+```
+
+### Python Code Support 🐍
+
+<AlertBox type="warning" title="Python Live Code Limitation">
+  Docusaurus **không hỗ trợ Python live code** mặc định. Chỉ có **static syntax highlighting** cho Python.
+</AlertBox>
+
+**Static Python Code Example:**
 
 <CodeBlock language="python" title="machine_learning.py" showLineNumbers>
 {`import numpy as np
@@ -406,6 +523,32 @@ accuracy = model.score(X_test, y_test)
 print(f"Model accuracy: {accuracy:.2%}")
 `}
 </CodeBlock>
+
+**Alternatives for Python Live Code:**
+
+<div style={{
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  padding: '25px',
+  borderRadius: '12px',
+  color: 'white',
+  margin: '20px 0'
+}}>
+
+### 🛠️ **Python Interactive Solutions**
+
+1. **Pyodide Integration** - Run Python in browser with WebAssembly
+2. **CodePen/JSFiddle** - Embed external Python sandboxes  
+3. **Trinket.io** - Educational Python environment
+4. **Repl.it embeds** - Full-featured online IDE
+5. **Jupyter Notebook integration** - Via nbviewer or custom components
+
+**Example Integration:**
+```html
+<iframe src="https://trinket.io/embed/python/d4cb3e2f9b" 
+        width="100%" height="300"></iframe>
+```
+
+</div>
 
 ## Custom Alert Components
 
@@ -497,15 +640,49 @@ flowchart TD
 
 ## Math with Interactive Elements
 
+<div style={{
+  border: '2px solid #764ba2',
+  borderRadius: '12px',
+  padding: '25px',
+  margin: '20px 0',
+  backgroundColor: 'var(--ifm-background-surface-color)'
+}}>
+
+### Inline Math Examples
+
 The quadratic formula: $x = \frac&#123;-b \pm \sqrt&#123;b^2-4ac&#125;&#125;&#123;2a&#125;$
 
-<Highlight color="#764ba2">Interactive math coming soon!</Highlight>
+Einstein's mass-energy equivalence: $E = mc^2$
 
-Block equation:
+Pythagorean theorem: $a^2 + b^2 = c^2$
 
+### Block Math Examples
+
+**Gaussian Integral:**
 $$
 \int_&#123;-\infty&#125;^&#123;\infty&#125; e^&#123;-x^2&#125; dx = \sqrt&#123;\pi&#125;
 $$
+
+**Euler's Identity:**
+$$
+e^&#123;i\pi&#125; + 1 = 0
+$$
+
+**Maxwell's Equations:**
+$$
+\begin&#123;aligned&#125;
+\nabla \times \vec&#123;E&#125; &= -\frac&#123;\partial \vec&#123;B&#125;&#125;&#123;\partial t&#125;\\
+\nabla \times \vec&#123;B&#125; &= \mu_0\vec&#123;J&#125; + \mu_0\epsilon_0\frac&#123;\partial \vec&#123;E&#125;&#125;&#123;\partial t&#125;\\
+\nabla \cdot \vec&#123;E&#125; &= \frac&#123;\rho&#125;&#123;\epsilon_0&#125;\\
+\nabla \cdot \vec&#123;B&#125; &= 0
+\end&#123;aligned&#125;
+$$
+
+</div>
+
+<AlertBox type="success" title="Math Support ✅">
+  KaTeX math rendering is **fully working** in Docusaurus MDX files! Both inline `$...$` and block `$$...$$` equations are supported.
+</AlertBox>
 
 ## Complex Example: Todo List
 
@@ -635,16 +812,26 @@ This page demonstrates the incredible power of **MDX in Docusaurus**:
 
 - ✅ **Standard Markdown** - All basic features work perfectly
 - ✅ **React Components** - Custom interactive components
-- ✅ **Live Code Editor** - Editable and executable code blocks  
+- ✅ **Live Code Editor** - Editable JavaScript/React code blocks  
+- ✅ **Math Support** - Full KaTeX rendering for equations
 - ✅ **Tabs & Navigation** - Enhanced user experience
 - ✅ **Custom Styling** - Inline styles and CSS-in-JS
 - ✅ **Mixed Content** - Seamless integration of markdown and JSX
 - ✅ **Complex Interactions** - Full React functionality
+- ⚠️ **Python Limitation** - Static code only, live code needs external tools
 
 <div style={{textAlign: 'center', margin: '40px 0'}}>
-  <Highlight color="#25c2a0">
-    MDX + Docusaurus = Powerful Documentation! 🎉
-  </Highlight>
+  <div style={{
+    background: 'linear-gradient(135deg, #25c2a0 0%, #667eea 100%)',
+    padding: '20px',
+    borderRadius: '12px',
+    color: 'white',
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    boxShadow: '0 4px 15px rgba(37, 194, 160, 0.3)'
+  }}>
+    🎉 MDX + Docusaurus = Powerful Documentation! 🚀
+  </div>
 </div>
 
 **MDX** là viết tắt của **M**ark**d**own + **J**S**X** - cho phép bạn viết JSX (React components) trực tiếp trong các file Markdown, tạo ra tài liệu tương tác và động.
