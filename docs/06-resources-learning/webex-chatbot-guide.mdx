@@ -1,0 +1,2427 @@
+---
+title: "Building a Webex Chatbot for Testbed Environment Monitoring"
+description: "Complete interactive guide to configure and setup a Webex Chatbot for tracking test environment usage with registration, status monitoring, and broadcasting capabilities"
+tags: ["webex", "chatbot", "testbed", "monitoring", "python", "automation", "websocket"]
+sidebar_label: "Webex Chatbot Guide"
+sidebar_position: 3
+---
+
+import React from 'react';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
+import TOCInline from '@theme/TOCInline';
+import Details from '@theme/Details';
+
+export const Highlight = ({children, color}) => (
+  <span
+    style={{
+      backgroundColor: color,
+      borderRadius: '8px',
+      color: '#fff',
+      padding: '0.4rem 0.8rem',
+      fontWeight: 'bold',
+      display: 'inline-block',
+      margin: '0.2rem',
+    }}>
+    {children}
+  </span>
+);
+
+export const InfoCard = ({children, title, icon, color = '#667eea'}) => (
+  <div style={{
+    border: `2px solid ${color}`,
+    borderRadius: '12px',
+    padding: '20px',
+    margin: '20px 0',
+    backgroundColor: 'var(--ifm-background-surface-color)',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  }}>
+    {title && (
+      <h3 style={{marginTop: 0, color: color, display: 'flex', alignItems: 'center', gap: '10px'}}>
+        {icon && <span style={{fontSize: '1.5rem'}}>{icon}</span>}
+        {title}
+      </h3>
+    )}
+    {children}
+  </div>
+);
+
+export const FeatureGrid = ({children}) => (
+  <div style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '20px',
+    margin: '30px 0',
+  }}>
+    {children}
+  </div>
+);
+
+export const FeatureCard = ({icon, title, description, color = '#667eea'}) => (
+  <div style={{
+    border: `2px solid ${color}`,
+    borderRadius: '12px',
+    padding: '20px',
+    textAlign: 'center',
+    backgroundColor: 'var(--ifm-background-surface-color)',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    cursor: 'pointer',
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = 'translateY(-5px)';
+    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = 'translateY(0)';
+    e.currentTarget.style.boxShadow = 'none';
+  }}>
+    <div style={{fontSize: '3rem', marginBottom: '15px'}}>{icon}</div>
+    <h3 style={{color: color, margin: '10px 0'}}>{title}</h3>
+    <p style={{color: '#666', fontSize: '0.95rem'}}>{description}</p>
+  </div>
+);
+
+export const ImageGallery = ({images}) => {
+  const [selected, setSelected] = React.useState(0);
+
+  return (
+    <div style={{
+      border: '2px solid #667eea',
+      borderRadius: '12px',
+      padding: '20px',
+      margin: '30px 0',
+      backgroundColor: 'var(--ifm-background-surface-color)',
+    }}>
+      {/* Main display image with fixed aspect ratio */}
+      <div style={{
+        marginBottom: '20px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+        overflow: 'hidden',
+      }}>
+        <img
+          src={images[selected].src}
+          alt={images[selected].alt}
+          className="no-zoom"
+          style={{
+            width: '100%',
+            height: '500px',
+            objectFit: 'contain',
+            backgroundColor: '#fff',
+          }}
+        />
+        <p style={{
+          textAlign: 'center',
+          margin: '15px 0 5px',
+          padding: '0 10px',
+          color: '#667eea',
+          fontWeight: 'bold',
+          fontSize: '1.1rem',
+        }}>
+          {images[selected].caption}
+        </p>
+      </div>
+
+      {/* Thumbnail grid with uniform sizing */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+        gap: '12px',
+      }}>
+        {images.map((img, idx) => (
+          <div
+            key={idx}
+            onClick={() => setSelected(idx)}
+            style={{
+              position: 'relative',
+              cursor: 'pointer',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              border: selected === idx ? '3px solid #667eea' : '2px solid #ddd',
+              backgroundColor: '#fff',
+              transition: 'all 0.3s ease',
+              transform: selected === idx ? 'scale(1.05)' : 'scale(1)',
+            }}
+          >
+            <img
+              src={img.src}
+              alt={img.alt}
+              className="no-zoom"
+              style={{
+                width: '100%',
+                height: '100px',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+            />
+            {selected === idx && (
+              <div style={{
+                position: 'absolute',
+                top: '5px',
+                right: '5px',
+                backgroundColor: '#667eea',
+                color: 'white',
+                borderRadius: '50%',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: 'bold',
+              }}>
+                ✓
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const StepIndicator = ({steps, currentStep}) => {
+  const stepAnchors = {
+    'Setup Bot': '#step-1-create-your-webex-bot',
+    'Configure Env': '#step-2-environment-setup',
+    'Install Deps': '#step-3-configuration',
+    'Deploy': '#step-5-main-bot-implementation',
+    'Test': '#bot-features-deep-dive'
+  };
+
+  const handleStepClick = (stepName) => {
+    const anchor = stepAnchors[stepName];
+    if (anchor) {
+      window.location.hash = anchor;
+      const element = document.querySelector(anchor);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      margin: '30px 0',
+      position: 'relative',
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        left: '0',
+        right: '0',
+        height: '2px',
+        backgroundColor: '#ddd',
+        zIndex: 0,
+      }}>
+        <div style={{
+          height: '100%',
+          backgroundColor: '#667eea',
+          width: `${(currentStep / (steps.length - 1)) * 100}%`,
+          transition: 'width 0.5s ease',
+        }} />
+      </div>
+
+      {steps.map((step, idx) => (
+        <div
+          key={idx}
+          onClick={() => handleStepClick(step)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            zIndex: 1,
+            cursor: 'pointer',
+          }}
+        >
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            backgroundColor: idx <= currentStep ? '#667eea' : '#ddd',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            marginBottom: '10px',
+            transition: 'all 0.3s ease',
+            transform: 'scale(1)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.15)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}>
+            {idx + 1}
+          </div>
+          <span style={{
+            fontSize: '0.85rem',
+            textAlign: 'center',
+            color: idx <= currentStep ? '#667eea' : '#999',
+            fontWeight: idx === currentStep ? 'bold' : 'normal',
+            transition: 'color 0.3s ease',
+          }}>
+            {step}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export const InteractiveArchitecture = () => {
+  const [hoveredComponent, setHoveredComponent] = React.useState(null);
+
+  const components = [
+    { id: 'webex', label: 'Webex Cloud', x: 50, y: 20, color: '#25c2a0', description: 'Webex Teams messaging platform with WebSocket API' },
+    { id: 'bot', label: 'Bot Server', x: 50, y: 50, color: '#667eea', description: 'Python bot using webex_bot framework with WebSocket connection' },
+    { id: 'db', label: 'JSON DB', x: 20, y: 80, color: '#ff6b6b', description: 'testbed_monitor.json - Stores testbed status and user data' },
+    { id: 'cards', label: 'Adaptive Cards', x: 80, y: 80, color: '#4ecdc4', description: 'Rich interactive UI cards for user interaction' },
+  ];
+
+  return (
+    <div style={{
+      border: '2px solid #667eea',
+      borderRadius: '12px',
+      padding: '30px',
+      margin: '30px 0',
+      backgroundColor: 'var(--ifm-background-surface-color)',
+    }}>
+      <h3 style={{textAlign: 'center', color: '#667eea', marginBottom: '30px'}}>
+        🏗️ Interactive System Architecture
+      </h3>
+
+      <div style={{
+        position: 'relative',
+        height: '400px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+      }}>
+        <svg style={{position: 'absolute', width: '100%', height: '100%', zIndex: 0}}>
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#667eea" />
+            </marker>
+          </defs>
+
+          <line x1="50%" y1="20%" x2="50%" y2="50%" stroke="#667eea" strokeWidth="2" markerEnd="url(#arrowhead)" />
+          <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#667eea" strokeWidth="2" markerEnd="url(#arrowhead)" />
+          <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#667eea" strokeWidth="2" markerEnd="url(#arrowhead)" />
+        </svg>
+
+        {components.map((comp) => (
+          <div
+            key={comp.id}
+            onMouseEnter={() => setHoveredComponent(comp.id)}
+            onMouseLeave={() => setHoveredComponent(null)}
+            style={{
+              position: 'absolute',
+              left: `${comp.x}%`,
+              top: `${comp.y}%`,
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: comp.color,
+              color: 'white',
+              padding: '15px 25px',
+              borderRadius: '10px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              zIndex: 1,
+              transition: 'all 0.3s ease',
+              boxShadow: hoveredComponent === comp.id ? '0 8px 20px rgba(0,0,0,0.3)' : '0 4px 10px rgba(0,0,0,0.15)',
+              transform: hoveredComponent === comp.id ? 'translate(-50%, -50%) scale(1.1)' : 'translate(-50%, -50%)',
+            }}
+          >
+            {comp.label}
+          </div>
+        ))}
+      </div>
+
+      {hoveredComponent && (
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          backgroundColor: '#f0f0f0',
+          borderRadius: '8px',
+          textAlign: 'center',
+          animation: 'fadeIn 0.3s ease',
+        }}>
+          <strong>{components.find(c => c.id === hoveredComponent)?.label}:</strong>{' '}
+          {components.find(c => c.id === hoveredComponent)?.description}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const CollapsibleLiveCode = ({children, title = "💻 View Source Code", defaultOpen = false}) => {
+  const [isOpen, setIsOpen] = React.useState(defaultOpen);
+
+  return (
+    <div style={{
+      border: '2px solid #667eea',
+      borderRadius: '12px',
+      padding: '15px',
+      margin: '20px 0',
+      backgroundColor: 'var(--ifm-background-surface-color)',
+    }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          padding: '10px',
+          backgroundColor: '#667eea',
+          color: 'white',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: isOpen ? '15px' : '0',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        <span>{title}</span>
+        <span style={{
+          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          transition: 'transform 0.3s ease',
+        }}>
+          ▼
+        </span>
+      </button>
+
+      <div style={{
+        maxHeight: isOpen ? '1000px' : '0',
+        overflow: 'hidden',
+        transition: 'max-height 0.5s ease',
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export const TroubleshootBot = () => {
+  const [issue, setIssue] = React.useState('');
+  const [solution, setSolution] = React.useState('');
+
+  const issues = {
+    'token': '🔑 Invalid Access Token\n\nSolution:\n1. Verify token in .env file\n2. Regenerate token on developer.webex.com\n3. Ensure no extra spaces/newlines\n4. Check token hasn\'t expired',
+    'room': '🚪 Not in Approved Rooms\n\nSolution:\n1. Check APPROVED_ROOMS in .env\n2. Verify room ID format (starts with Y2lzY29zcGFy...)\n3. Add bot to the room first\n4. Restart bot after adding rooms',
+    'websocket': '🔌 WebSocket Connection Failed\n\nSolution:\n1. Check internet connectivity\n2. Verify proxy settings if behind firewall\n3. Look for "WebSocket connected" in logs\n4. Check firewall rules for outbound WSS',
+    'command': '💬 Commands Not Recognized\n\nSolution:\n1. Mention bot with @BotName\n2. Check command spelling\n3. Verify bot has registered commands\n4. Enable debug logging to see received messages'
+  };
+
+  return (
+    <div style={{padding: '20px', border: '2px solid #667eea', borderRadius: '10px', marginTop: '20px'}}>
+      <h3 style={{color: '#667eea', marginTop: 0}}>🔍 Issue Troubleshooter</h3>
+
+      <div style={{marginBottom: '20px'}}>
+        <label style={{display: 'block', marginBottom: '10px', fontWeight: 'bold'}}>
+          Select your issue:
+        </label>
+        <select
+          value={issue}
+          onChange={(e) => {
+            setIssue(e.target.value);
+            setSolution(issues[e.target.value] || '');
+          }}
+          style={{
+            width: '100%',
+            padding: '10px',
+            borderRadius: '6px',
+            border: '1px solid #ddd',
+          }}
+        >
+          <option value="">-- Choose an issue --</option>
+          <option value="token">Bot not responding - Token issue</option>
+          <option value="room">Bot not responding - Room issue</option>
+          <option value="websocket">WebSocket connection failed</option>
+          <option value="command">Commands not recognized</option>
+        </select>
+      </div>
+
+      {solution && (
+        <div style={{
+          backgroundColor: '#f0f0f0',
+          padding: '15px',
+          borderRadius: '8px',
+          whiteSpace: 'pre-line',
+          fontFamily: 'monospace',
+          fontSize: '0.9rem',
+        }}>
+          {solution}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const BotAnalytics = () => {
+  const [stats] = React.useState({
+    totalCommands: 1247,
+    registrations: 342,
+    releases: 318,
+    broadcasts: 87,
+    activeUsers: 45,
+    avgResponseTime: '0.8s',
+  });
+
+  const [timeRange, setTimeRange] = React.useState('week');
+
+  const chartData = {
+    week: [12, 19, 15, 22, 18, 25, 20],
+    month: [45, 52, 48, 61, 55, 70, 65, 72, 68, 75, 71, 80, 77, 85, 82, 90, 87, 92, 88, 95, 91, 98, 94, 100, 96, 102, 99, 105, 101, 108],
+    year: [420, 450, 480, 520, 510, 540, 580, 560, 590, 620, 610, 650]
+  };
+
+  return (
+    <div style={{
+      border: '2px solid #667eea',
+      borderRadius: '12px',
+      padding: '25px',
+      backgroundColor: 'var(--ifm-background-surface-color)',
+      margin: '20px 0',
+    }}>
+      <h3 style={{color: '#667eea', marginTop: 0}}>📈 Bot Analytics Dashboard</h3>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: '15px',
+        marginBottom: '25px',
+      }}>
+        {[
+          { label: 'Total Commands', value: stats.totalCommands, icon: '💬', color: '#667eea' },
+          { label: 'Registrations', value: stats.registrations, icon: '✍️', color: '#25c2a0' },
+          { label: 'Releases', value: stats.releases, icon: '🔓', color: '#ff6b6b' },
+          { label: 'Broadcasts', value: stats.broadcasts, icon: '📢', color: '#4ecdc4' },
+          { label: 'Active Users', value: stats.activeUsers, icon: '👥', color: '#feca57' },
+          { label: 'Avg Response', value: stats.avgResponseTime, icon: '⚡', color: '#a29bfe' },
+        ].map((stat, idx) => (
+          <div key={idx} style={{
+            padding: '15px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '8px',
+            textAlign: 'center',
+          }}>
+            <div style={{fontSize: '2rem', marginBottom: '5px'}}>{stat.icon}</div>
+            <div style={{fontSize: '1.5rem', fontWeight: 'bold', color: stat.color}}>
+              {stat.value}
+            </div>
+            <div style={{fontSize: '0.85rem', color: '#666', marginTop: '5px'}}>
+              {stat.label}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{marginBottom: '15px'}}>
+        <label style={{fontWeight: 'bold', marginRight: '10px'}}>Time Range:</label>
+        <select
+          value={timeRange}
+          onChange={(e) => setTimeRange(e.target.value)}
+          style={{
+            padding: '8px',
+            borderRadius: '6px',
+            border: '1px solid #ddd',
+          }}
+        >
+          <option value="week">Last 7 Days</option>
+          <option value="month">Last 30 Days</option>
+          <option value="year">Last 12 Months</option>
+        </select>
+      </div>
+
+      <div style={{
+        height: '200px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+        display: 'flex',
+        alignItems: 'flex-end',
+        gap: '5px',
+        padding: '20px',
+      }}>
+        {chartData[timeRange].map((value, idx) => (
+          <div key={idx} style={{
+            flex: 1,
+            backgroundColor: '#667eea',
+            height: `${(value / Math.max(...chartData[timeRange])) * 100}%`,
+            borderRadius: '4px 4px 0 0',
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#25c2a0';
+            e.target.style.transform = 'translateY(-5px)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#667eea';
+            e.target.style.transform = 'translateY(0)';
+          }}
+          title={`Value: ${value}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const CommandDemo = () => {
+  const [command, setCommand] = React.useState('');
+  const [output, setOutput] = React.useState('');
+
+  const commands = {
+    'testbed': '📊 Displaying main menu with options:\n• Check Status\n• Register Testbed\n• Release Testbed\n• Broadcast',
+    'help': '❓ Available commands:\n• testbed - Main menu\n• help - Show this help',
+    'status': '✅ Testbed Status:\nTestbed-1: Available\nTestbed-2: In Use (John Doe)\nIaC1: Available',
+  };
+
+  const handleCommand = () => {
+    const result = commands[command.toLowerCase()] || '❌ Unknown command. Try "help"';
+    setOutput(result);
+  };
+
+  return (
+    <div style={{
+      border: '2px solid #667eea',
+      borderRadius: '12px',
+      padding: '20px',
+      margin: '20px 0',
+      backgroundColor: 'var(--ifm-background-surface-color)',
+    }}>
+      <h3 style={{color: '#667eea', marginTop: 0}}>💬 Bot Command Simulator</h3>
+
+      <div style={{
+        backgroundColor: '#1e1e1e',
+        color: '#d4d4d4',
+        padding: '20px',
+        borderRadius: '8px',
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        minHeight: '150px',
+        marginBottom: '15px',
+      }}>
+        <div style={{color: '#4ec9b0'}}>Webex Bot v1.0.8</div>
+        <div style={{color: '#6a9955'}}>// Type a command below</div>
+        <div style={{marginTop: '10px'}}>
+          {output.split('\n').map((line, idx) => (
+            <div key={idx} style={{marginBottom: '5px'}}>{line}</div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{display: 'flex', gap: '10px'}}>
+        <input
+          type="text"
+          value={command}
+          onChange={(e) => setCommand(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleCommand()}
+          placeholder="Type: testbed, help, or status"
+          style={{
+            flex: 1,
+            padding: '10px',
+            border: '1px solid #ddd',
+            borderRadius: '6px',
+            fontSize: '14px',
+          }}
+        />
+        <button
+          onClick={handleCommand}
+          style={{
+            backgroundColor: '#667eea',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  );
+};
+
+# Building a Webex Chatbot for Testbed Environment Monitoring 🤖
+
+<div style={{
+  background: 'linear-gradient(135deg, #25c2a0 0%, #667eea 100%)',
+  padding: '30px',
+  borderRadius: '15px',
+  color: 'white',
+  textAlign: 'center',
+  margin: '30px 0',
+  boxShadow: '0 8px 25px rgba(37, 194, 160, 0.3)',
+}}>
+  <h2 style={{margin: 0, fontSize: '2rem'}}>
+    🚀 Build an Intelligent Testbed Monitoring Bot
+  </h2>
+  <p style={{margin: '15px 0 0', fontSize: '1.1rem', opacity: 0.95}}>
+    Automate testbed management with WebSocket-powered real-time monitoring
+  </p>
+</div>
+
+## 📋 Table of Contents
+
+<TOCInline toc={toc} minHeadingLevel={2} maxHeadingLevel={3} />
+
+## Overview
+
+The **Testbed Monitor Bot** is a sophisticated Webex-integrated chatbot that revolutionizes how teams manage and track test environment resources. Built with Python and leveraging WebSocket technology, it eliminates the need for webhooks and public IP addresses.
+
+<FeatureGrid>
+  <FeatureCard
+    icon="📊"
+    title="Real-time Monitoring"
+    description="Track testbed availability and usage with instant updates"
+    color="#25c2a0"
+  />
+  <FeatureCard
+    icon="🔔"
+    title="Smart Broadcasting"
+    description="Notify teams across multiple Webex rooms automatically"
+    color="#667eea"
+  />
+  <FeatureCard
+    icon="📝"
+    title="Easy Registration"
+    description="Book testbeds with interactive Adaptive Cards UI"
+    color="#ff6b6b"
+  />
+  <FeatureCard
+    icon="🔒"
+    title="WebSocket Security"
+    description="No public IP needed - secure behind firewalls"
+    color="#4ecdc4"
+  />
+</FeatureGrid>
+
+## 🎯 Key Features
+
+<InfoCard title="Why WebSocket?" icon="🔌" color="#25c2a0">
+
+<div>
+
+Unlike traditional webhook-based bots that require:
+- ✗ Public IP address
+- ✗ SSL certificates
+- ✗ Firewall configurations
+- ✗ ngrok tunnels
+
+This bot uses **WebSocket** connections:
+- ✓ Works behind corporate firewalls
+- ✓ No complex network setup
+- ✓ Real-time bidirectional communication
+- ✓ Automatic reconnection on failure
+
+</div>
+
+</InfoCard>
+
+### Core Capabilities
+
+<Tabs>
+  <TabItem value="monitoring" label="📊 Monitoring" default>
+
+<div>
+
+**Real-time Testbed Status**
+
+- View all testbeds at a glance
+- See who's using what resource
+- Track usage duration and expected release time
+- Color-coded availability indicators
+
+```python
+# Bot automatically tracks:
+{
+  "testbed_name": "Testbed-1",
+  "status": "in_use",
+  "user_email": "engineer@company.com",
+  "registered_time": "2025-10-01T10:30:00Z",
+  "expected_release_time": "2025-10-01T18:00:00Z"
+}
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="registration" label="✍️ Registration">
+
+<div>
+
+**Interactive Registration System**
+
+- **Adaptive Cards UI** - No typing required
+- **Auto-populated user info** - Pulls from Webex profile
+- **Dropdown selection** - Choose from available testbeds
+- **Time tracking** - Set expected release time
+- **Purpose logging** - Document usage reason
+
+Example workflow:
+
+1. User sends `testbed` command
+2. Bot displays menu card
+3. User clicks "Register Testbed"
+4. Bot shows registration form
+5. User fills form and submits
+6. Bot updates database and confirms
+
+</div>
+
+  </TabItem>
+  <TabItem value="broadcasting" label="📢 Broadcasting">
+
+<div>
+
+**Multi-room Notifications**
+
+Broadcast testbed status to multiple Webex rooms:
+
+```json
+{
+  "broadcast_rooms": [
+    {
+      "name": "QA Team",
+      "room_id": "Y2lzY29zcGFyazovL...",
+      "description": "Quality assurance team channel"
+    },
+    {
+      "name": "Development Team",
+      "room_id": "Y2lzY29zcGFyazovL...",
+      "description": "Dev team coordination"
+    }
+  ]
+}
+```
+
+Features:
+
+- Select specific rooms for broadcasting
+- Rich card notifications with full details
+- Automatic room discovery
+- Permission-based access
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+## 🏗️ System Architecture
+
+<InteractiveArchitecture />
+
+### Technology Stack
+
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+  gap: '15px',
+  margin: '20px 0',
+}}>
+  <div style={{padding: '15px', backgroundColor: '#f0f0f0', borderRadius: '8px', textAlign: 'center'}}>
+    <strong style={{color: '#667eea'}}>🐍 Python 3.10+</strong>
+    <div style={{fontSize: '0.9rem', color: '#666', marginTop: '5px'}}>Core language</div>
+  </div>
+  <div style={{padding: '15px', backgroundColor: '#f0f0f0', borderRadius: '8px', textAlign: 'center'}}>
+    <strong style={{color: '#25c2a0'}}>🔌 websockets</strong>
+    <div style={{fontSize: '0.9rem', color: '#666', marginTop: '5px'}}>Real-time communication</div>
+  </div>
+  <div style={{padding: '15px', backgroundColor: '#f0f0f0', borderRadius: '8px', textAlign: 'center'}}>
+    <strong style={{color: '#ff6b6b'}}>💾 JSON Database</strong>
+    <div style={{fontSize: '0.9rem', color: '#666', marginTop: '5px'}}>Lightweight storage</div>
+  </div>
+  <div style={{padding: '15px', backgroundColor: '#f0f0f0', borderRadius: '8px', textAlign: 'center'}}>
+    <strong style={{color: '#4ecdc4'}}>🎴 Adaptive Cards</strong>
+    <div style={{fontSize: '0.9rem', color: '#666', marginTop: '5px'}}>Interactive UI</div>
+  </div>
+</div>
+
+## 📸 Bot Interface Gallery
+
+export const botImages = [
+  {
+    src: '/img/webex-bot/main_menu.png',
+    alt: 'Main Menu',
+    caption: '🏠 Main Menu - Entry point with all bot functions'
+  },
+  {
+    src: '/img/webex-bot/status.png',
+    alt: 'Status View',
+    caption: '📊 Status Dashboard - Real-time testbed availability'
+  },
+  {
+    src: '/img/webex-bot/Register.png',
+    alt: 'Registration Form',
+    caption: '✍️ Registration Form - Interactive booking interface'
+  },
+  {
+    src: '/img/webex-bot/success_register.png',
+    alt: 'Success Message',
+    caption: '✅ Success Confirmation - Registration complete'
+  },
+  {
+    src: '/img/webex-bot/broadcast_form.png',
+    alt: 'Broadcast Selection',
+    caption: '📢 Broadcast Form - Select rooms for notifications'
+  },
+  {
+    src: '/img/webex-bot/broadcastmessage.png',
+    alt: 'Broadcast Message',
+    caption: '💬 Broadcast Message - Notification sent to teams'
+  },
+  {
+    src: '/img/webex-bot/release_form.png',
+    alt: 'Release Form',
+    caption: '🔓 Release Form - Free up testbed resources'
+  },
+  {
+    src: '/img/webex-bot/help_start.png',
+    alt: 'Help Command',
+    caption: '❓ Help Menu - Available commands and guidance'
+  },
+  {
+    src: '/img/webex-bot/feedback.png',
+    alt: 'Feedback',
+    caption: '💭 User Feedback - Bot interaction example'
+  },
+];
+
+<ImageGallery images={botImages} />
+
+## 🚀 Getting Started
+
+<StepIndicator
+  steps={['Setup Bot', 'Configure Env', 'Install Deps', 'Deploy', 'Test']}
+  currentStep={0}
+/>
+
+### Prerequisites
+
+<InfoCard title="Requirements Checklist" icon="✅" color="#4ecdc4">
+
+<div>
+
+Before starting, ensure you have:
+
+- <Highlight color="#25c2a0">Python 3.10+</Highlight> installed and configured
+- <Highlight color="#667eea">Webex Teams account</Highlight> with bot creation privileges
+- <Highlight color="#ff6b6b">Network access</Highlight> to Webex APIs (or proxy configuration)
+- <Highlight color="#4ecdc4">Basic knowledge</Highlight> of Python and REST APIs
+
+Optional but recommended:
+- Git for version control
+- Virtual environment (venv/conda)
+- Docker for containerized deployment
+
+</div>
+
+</InfoCard>
+
+### Step 1: Create Your Webex Bot
+
+<Tabs>
+  <TabItem value="portal" label="🌐 Web Portal" default>
+
+<div>
+
+**Register via Webex Developer Portal:**
+
+1. Visit [developer.webex.com](https://developer.webex.com/)
+2. Sign in with your Webex credentials
+3. Navigate to **My Apps** → **Create a New App**
+4. Select **Create a Bot**
+
+5. Fill in bot details:
+
+```yaml
+Bot Name: Testbed Monitor Bot
+Bot Username: testbed-monitor@webex.bot
+Bot Icon: [Upload custom icon]
+Description: Intelligent bot for tracking and managing testbed usage
+```
+
+6. Click **Add Bot** and copy the **Bot Access Token**
+
+<InfoCard title="🔒 Security Warning" icon="⚠️" color="#ff6b6b">
+
+<div>
+
+**Never commit your bot token to version control!**
+
+The bot access token is like a password. If exposed:
+
+- Anyone can impersonate your bot
+- Unauthorized access to conversations
+- Potential data breaches
+
+Always store it in:
+
+- Environment variables
+- `.env` files (add to `.gitignore`)
+- Secret management systems (AWS Secrets Manager, Azure Key Vault)
+
+</div>
+
+</InfoCard>
+
+</div>
+
+  </TabItem>
+  <TabItem value="api" label="🔧 API Method">
+
+<div>
+
+**Create Bot via REST API:**
+
+```bash
+curl -X POST https://webexapis.com/v1/bots \
+  -H "Authorization: Bearer YOUR_PERSONAL_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Testbed Monitor Bot",
+    "username": "testbed-monitor",
+    "avatar": "https://your-domain.com/bot-icon.png"
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "Y2lzY29zcGFyazovL...",
+  "name": "Testbed Monitor Bot",
+  "created": "2025-10-01T10:00:00.000Z",
+  "email": "testbed-monitor@webex.bot",
+  "token": "YOUR_BOT_ACCESS_TOKEN"
+}
+```
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+### Step 2: Environment Setup
+
+<Tabs groupId="os">
+  <TabItem value="windows" label="🪟 Windows">
+
+<div>
+
+**Windows Setup:**
+
+```powershell
+# Clone the repository
+git clone https://github.com/ngtanthanh-qc/webexchatbot_sample.git
+cd webexchatbot_sample
+
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+.venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="macos" label="🍎 macOS/Linux">
+
+<div>
+
+**macOS/Linux Setup:**
+
+```bash
+# Clone the repository
+git clone https://github.com/ngtanthanh-qc/webexchatbot_sample.git
+cd webexchatbot_sample
+
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="docker" label="🐳 Docker">
+
+<div>
+
+**Docker Setup:**
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Run bot
+CMD ["python", "example.py"]
+```
+
+Build and run:
+
+```bash
+docker build -t testbed-bot .
+docker run -d --env-file .env --name testbed-bot testbed-bot
+```
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+### Step 3: Configuration
+
+Create `.env` file in project root:
+
+<CodeBlock language="bash" title=".env" showLineNumbers>
+{`# Webex Bot Configuration
+WEBEX_ACCESS_TOKEN=your_bot_access_token_here
+BOT_NAME=Testbed Monitor Bot
+
+# Database Configuration
+TESTBED_DB_NAME=testbed_monitor.json
+
+# Webex API Configuration
+WEBEX_API_URL=https://webexapis.com/v1
+
+# Approved Rooms (comma-separated room IDs)
+# Find room ID: Open Webex web, go to room, copy ID from URL
+APPROVED_ROOMS=Y2lzY29zcGFyazovL3VzL1JPT00vNTU4NGI4MjAtNTRkMi0xMWVkLTg0YWItYzMyYWU2ZGNhOGE4
+
+# Proxy Configuration (if behind corporate firewall)
+HTTPS_PROXY=http://proxy.company.com:80
+WSS_PROXY=socks5://proxy.company.com:1080`}
+</CodeBlock>
+
+<InfoCard title="🔍 Finding Room IDs" icon="🆔" color="#667eea">
+
+<div>
+
+**How to get Webex Room ID:**
+
+1. Open [Webex Web App](https://web.webex.com/)
+2. Navigate to the desired room/space
+3. Look at the browser URL:
+   ```
+   https://web.webex.com/spaces/Y2lzY29zcGFyazovL3VzL1JPT00v...
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              This is your Room ID
+   ```
+4. Copy the ID after `/spaces/`
+
+**Alternative method via API:**
+
+```python
+from webexpythonsdk import WebexAPI
+
+api = WebexAPI(access_token='YOUR_TOKEN')
+rooms = api.rooms.list()
+
+for room in rooms:
+    print(f"{room.title}: {room.id}")
+```
+
+</div>
+
+</InfoCard>
+
+### Step 4: Database Initialization
+
+The bot uses JSON for lightweight data storage. Customize `testbed_monitor.json`:
+
+<CodeBlock language="json" title="testbed_monitor.json" showLineNumbers>
+{`{
+  "testbeds": [
+    {
+      "id": 1,
+      "testbed_name": "Production-Mirror",
+      "status": "available",
+      "user_email": null,
+      "user_name": null,
+      "registered_time": null,
+      "purpose": null,
+      "expected_release_time": null
+    },
+    {
+      "id": 2,
+      "testbed_name": "Dev-Environment-1",
+      "status": "available",
+      "user_email": null,
+      "user_name": null,
+      "registered_time": null,
+      "purpose": null,
+      "expected_release_time": null
+    },
+    {
+      "id": 3,
+      "testbed_name": "IaC-Sandbox",
+      "status": "in_use",
+      "user_email": "engineer@company.com",
+      "user_name": "John Doe",
+      "registered_time": "2025-10-01T09:00:00Z",
+      "purpose": "Testing CI/CD pipeline",
+      "expected_release_time": "2025-10-01T17:00:00Z"
+    }
+  ]
+}`}
+</CodeBlock>
+
+**Database Schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Integer | Unique testbed identifier |
+| `testbed_name` | String | Testbed display name |
+| `status` | String | `available` or `in_use` |
+| `user_email` | String/null | Email of current user |
+| `user_name` | String/null | Name of current user |
+| `registered_time` | ISO8601/null | When testbed was booked |
+| `purpose` | String/null | Usage purpose/description |
+| `expected_release_time` | ISO8601/null | Expected availability time |
+
+### Step 5: Main Bot Implementation
+
+<CodeBlock language="python" title="example.py" showLineNumbers>
+{`import os
+from webex_bot.commands.testbed_main import TestbedMainCommand
+from webex_bot.commands.help_custom import CustomHelpCommand
+from webex_bot.webex_bot import WebexBot
+from config import Config
+
+# Proxy configuration (optional)
+proxies = {
+    'https': 'http://proxy.company.com:80',
+    'wss': 'socks5://proxy.company.com:1080'
+}
+
+# Validate configuration
+try:
+    Config.validate_config()
+except ValueError as e:
+    print(f"❌ Configuration error: {e}")
+    exit(1)
+
+# Create Bot instance
+bot = WebexBot(
+    teams_bot_token=os.getenv("WEBEX_ACCESS_TOKEN"),
+    approved_rooms=Config.APPROVED_ROOMS,
+    bot_name=Config.BOT_NAME,
+    include_demo_commands=False,
+    help_command=CustomHelpCommand(),
+    proxies=proxies
+)
+
+# Register custom commands
+bot.add_command(TestbedMainCommand())
+
+# Start the bot (blocking call)
+if __name__ == "__main__":
+    print("🚀 Starting Testbed Monitor Bot...")
+    print(f"📝 Bot Name: {Config.BOT_NAME}")
+    print(f"🔧 Approved Rooms: {len(Config.APPROVED_ROOMS)}")
+    bot.run()
+    print("✅ Bot is running! Press Ctrl+C to stop.")`}
+</CodeBlock>
+
+## 🎨 Bot Features Deep Dive
+
+### Interactive Command Demo
+
+Try the bot command simulator below:
+
+<CommandDemo />
+
+### Custom Adaptive Cards
+
+The bot uses **Adaptive Cards** for rich, interactive UI:
+
+<Tabs>
+  <TabItem value="mainmenu" label="🏠 Main Menu" default>
+
+<div>
+
+**Main Menu Card Structure:**
+
+```python
+from webexpythonsdk.models.cards import AdaptiveCard, TextBlock, ActionSet
+from webexpythonsdk.models.cards.actions import Submit
+
+def create_main_menu():
+    card = AdaptiveCard(
+        body=[
+            TextBlock(
+                "🤖 Testbed Monitor Bot",
+                size="Large",
+                weight="Bolder",
+                color="Accent"
+            ),
+            TextBlock(
+                "Choose an action:",
+                wrap=True
+            )
+        ],
+        actions=[
+            Submit(title="📊 Check Status", data={"action": "status"}),
+            Submit(title="✍️ Register Testbed", data={"action": "register"}),
+            Submit(title="🔓 Release Testbed", data={"action": "release"}),
+            Submit(title="📢 Broadcast", data={"action": "broadcast"}),
+        ]
+    )
+    return card.to_dict()
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="register" label="✍️ Registration Form">
+
+<div>
+
+**Registration Form with Input Validation:**
+
+```python
+from webexpythonsdk.models.cards import *
+from webexpythonsdk.models.cards.inputs import Text, Choices, DateInput
+
+def create_registration_form(available_testbeds):
+    # Create testbed choices
+    testbed_choices = [
+        Choice(title=tb["testbed_name"], value=str(tb["id"]))
+        for tb in available_testbeds
+    ]
+
+    card = AdaptiveCard(
+        body=[
+            TextBlock("Register Testbed", size="Large", weight="Bolder"),
+
+            # Testbed selection dropdown
+            Input.ChoiceSet(
+                id="testbed_id",
+                label="Select Testbed",
+                choices=testbed_choices,
+                style="compact"
+            ),
+
+            # Purpose text input
+            Text(
+                id="purpose",
+                label="Purpose",
+                placeholder="e.g., Testing new feature",
+                maxLength=200,
+                isRequired=True
+            ),
+
+            # Expected release time
+            DateInput(
+                id="release_date",
+                label="Expected Release Date"
+            ),
+
+            Text(
+                id="release_time",
+                label="Expected Release Time (HH:MM)",
+                placeholder="e.g., 18:00"
+            )
+        ],
+        actions=[
+            Submit(title="✅ Register", data={"callback": "register_submit"}),
+            Submit(title="❌ Cancel", data={"callback": "cancel"})
+        ]
+    )
+    return card.to_dict()
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="status" label="📊 Status Display">
+
+<div>
+
+**Status Dashboard with Color Coding:**
+
+```python
+def create_status_card(testbeds):
+    containers = []
+
+    for tb in testbeds:
+        # Color based on status
+        status_color = "Good" if tb["status"] == "available" else "Warning"
+        status_text = "✅ Available" if tb["status"] == "available" else "🔴 In Use"
+
+        container = Container(
+            items=[
+                ColumnSet(
+                    columns=[
+                        Column(
+                            items=[
+                                TextBlock(
+                                    tb["testbed_name"],
+                                    weight="Bolder",
+                                    size="Medium"
+                                )
+                            ],
+                            width="auto"
+                        ),
+                        Column(
+                            items=[
+                                TextBlock(
+                                    status_text,
+                                    color=status_color,
+                                    horizontalAlignment="Right"
+                                )
+                            ],
+                            width="stretch"
+                        )
+                    ]
+                )
+            ],
+            style="emphasis" if tb["status"] == "in_use" else "default",
+            spacing="Small"
+        )
+
+        # Add user info if in use
+        if tb["status"] == "in_use":
+            container.items.append(
+                TextBlock(
+                    f"👤 {tb['user_name']}\n📝 {tb['purpose']}",
+                    size="Small",
+                    isSubtle=True,
+                    wrap=True
+                )
+            )
+
+        containers.append(container)
+
+    card = AdaptiveCard(
+        body=[
+            TextBlock("📊 Testbed Status", size="Large", weight="Bolder"),
+            *containers
+        ],
+        actions=[
+            Submit(title="🔄 Refresh", data={"action": "refresh_status"})
+        ]
+    )
+    return card.to_dict()
+```
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+### Broadcasting System
+
+<InfoCard title="📢 Multi-Room Broadcasting" icon="📡" color="#25c2a0">
+
+<div>
+
+The bot can send notifications to multiple Webex rooms simultaneously. Perfect for:
+
+- **Team coordination** - Notify all stakeholders
+- **Resource alerts** - Broadcast availability changes
+- **Scheduled maintenance** - Inform users of downtime
+- **Usage reports** - Share testbed statistics
+
+**Broadcast Configuration (`broadcast_rooms.json`):**
+
+```json
+{
+  "broadcast_rooms": [
+    {
+      "name": "QA Team",
+      "room_id": "Y2lzY29zcGFyazovL...",
+      "description": "Quality assurance team"
+    },
+    {
+      "name": "DevOps Team",
+      "room_id": "Y2lzY29zcGFyazovL...",
+      "description": "Infrastructure team"
+    }
+  ]
+}
+```
+
+</div>
+
+</InfoCard>
+
+## 🚢 Deployment Options
+
+<Tabs>
+  <TabItem value="local" label="💻 Local Development" default>
+
+<div>
+
+**For Testing and Development:**
+
+```bash
+# Start bot in foreground
+python example.py
+
+# Output:
+🚀 Starting Testbed Monitor Bot...
+📝 Bot Name: Testbed Monitor Bot
+🔧 Approved Rooms: 1
+✅ Bot is running! Press Ctrl+C to stop.
+⚡ WebSocket connected to Webex Cloud
+```
+
+<InfoCard title="Development Tips" icon="💡" color="#667eea">
+
+<div>
+
+**Best practices for local development:**
+
+- Use `.env.local` for local-specific configuration
+- Enable debug logging: `logging.basicConfig(level=logging.DEBUG)`
+- Test in private Webex room first
+- Use `ngrok` if you need to test webhooks
+- Monitor `testbed_monitor.json` changes in real-time
+
+</div>
+
+</InfoCard>
+
+</div>
+
+  </TabItem>
+  <TabItem value="linux" label="🐧 Linux Server">
+
+<div>
+
+**Production Deployment on Linux:**
+
+Create systemd service:
+
+```bash
+# Create service file
+sudo nano /etc/systemd/system/testbed-bot.service
+```
+
+<CodeBlock language="ini" title="/etc/systemd/system/testbed-bot.service">
+{`[Unit]
+Description=Testbed Monitor Webex Bot
+After=network.target
+
+[Service]
+Type=simple
+User=botuser
+WorkingDirectory=/opt/webexchatbot_sample
+Environment="PATH=/opt/webexchatbot_sample/.venv/bin"
+EnvironmentFile=/opt/webexchatbot_sample/.env
+ExecStart=/opt/webexchatbot_sample/.venv/bin/python example.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target`}
+</CodeBlock>
+
+Enable and start:
+
+```bash
+# Enable service
+sudo systemctl enable testbed-bot
+
+# Start service
+sudo systemctl start testbed-bot
+
+# Check status
+sudo systemctl status testbed-bot
+
+# View logs
+sudo journalctl -u testbed-bot -f
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="docker" label="🐳 Docker">
+
+<div>
+
+**Containerized Deployment:**
+
+<CodeBlock language="dockerfile" title="Dockerfile" showLineNumbers>
+{`FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Run bot
+CMD ["python", "example.py"]`}
+</CodeBlock>
+
+**Docker Compose:**
+
+<CodeBlock language="yaml" title="docker-compose.yml">
+{`version: '3.8'
+
+services:
+  testbed-bot:
+    build: .
+    container_name: testbed_monitor_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./testbed_monitor.json:/app/testbed_monitor.json
+      - ./broadcast_rooms.json:/app/broadcast_rooms.json
+    networks:
+      - bot_network
+
+networks:
+  bot_network:
+    driver: bridge`}
+</CodeBlock>
+
+Deploy:
+
+```bash
+# Build and start
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="cloud" label="☁️ Cloud Platforms">
+
+<div>
+
+**Cloud Deployment Options:**
+
+<div style={{marginTop: '20px'}}>
+
+**1. AWS EC2:**
+
+```bash
+# Launch EC2 instance (Amazon Linux 2)
+aws ec2 run-instances \
+  --image-id ami-0c55b159cbfafe1f0 \
+  --instance-type t3.micro \
+  --key-name your-key \
+  --security-groups bot-sg
+
+# SSH and setup
+ssh -i your-key.pem ec2-user@instance-ip
+git clone https://github.com/ngtanthanh-qc/webexchatbot_sample.git
+cd webexchatbot_sample
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Use systemd or screen for background execution
+screen -S bot
+python example.py
+# Press Ctrl+A then D to detach
+```
+
+**2. Heroku:**
+
+```bash
+# Create Procfile
+echo "worker: python example.py" > Procfile
+
+# Deploy
+heroku create testbed-monitor-bot
+heroku config:set WEBEX_ACCESS_TOKEN=your_token
+git push heroku main
+heroku ps:scale worker=1
+```
+
+**3. Google Cloud Run:**
+
+```bash
+# Build container
+gcloud builds submit --tag gcr.io/PROJECT-ID/testbed-bot
+
+# Deploy
+gcloud run deploy testbed-bot \
+  --image gcr.io/PROJECT-ID/testbed-bot \
+  --platform managed \
+  --region us-central1 \
+  --set-env-vars WEBEX_ACCESS_TOKEN=your_token
+```
+
+**4. Azure Container Instances:**
+
+```bash
+# Create resource group
+az group create --name testbed-bot-rg --location eastus
+
+# Deploy container
+az container create \
+  --resource-group testbed-bot-rg \
+  --name testbed-bot \
+  --image your-registry/testbed-bot:latest \
+  --environment-variables WEBEX_ACCESS_TOKEN=your_token \
+  --restart-policy Always
+```
+
+</div>
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+## 🔧 Advanced Configuration
+
+### Proxy Support
+
+<InfoCard title="🌐 Corporate Proxy Configuration" icon="🔒" color="#ff6b6b">
+
+Many corporate environments require proxy configuration:
+
+**HTTP/HTTPS Proxy:**
+```python
+proxies = {
+    'https': 'http://proxy.company.com:80'
+}
+```
+
+**SOCKS5 Proxy (for WebSocket):**
+```python
+proxies = {
+    'wss': 'socks5://proxy.company.com:1080'
+}
+```
+
+**Authenticated Proxy:**
+```python
+proxies = {
+    'https': 'http://username:password@proxy.company.com:80'
+}
+```
+
+**In config.py:**
+```python
+@classmethod
+def get_proxies(cls):
+    proxies = {}
+    if cls.HTTPS_PROXY:
+        proxies['https'] = cls.HTTPS_PROXY
+    if cls.WSS_PROXY:
+        proxies['wss'] = cls.WSS_PROXY
+    return proxies if proxies else None
+```
+
+</InfoCard>
+
+### Custom Logging
+
+<CodeBlock language="python" title="logging_config.py" showLineNumbers>
+{`import logging
+from colorlog import ColoredFormatter
+
+# Create colored formatter
+formatter = ColoredFormatter(
+    "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt='%Y-%m-%d %H:%M:%S',
+    log_colors={
+        'DEBUG': 'cyan',
+        'INFO': 'green',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'red,bg_white',
+    }
+)
+
+# Configure handlers
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+
+file_handler = logging.FileHandler('testbed_bot.log')
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+))
+
+# Configure root logger
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[console_handler, file_handler]
+)
+
+# Bot-specific logger
+logger = logging.getLogger('testbed_bot')
+logger.setLevel(logging.DEBUG)`}
+</CodeBlock>
+
+### Database Migration
+
+<Tabs>
+  <TabItem value="json" label="📄 JSON (Current)" default>
+
+<div>
+
+**Current Implementation - Simple and Portable:**
+
+✅ Advantages:
+- No external dependencies
+- Easy to read/edit manually
+- Simple backup (just copy file)
+- Works everywhere
+
+❌ Limitations:
+- Not suitable for high concurrency
+- Limited query capabilities
+- No built-in transactions
+
+</div>
+
+  </TabItem>
+  <TabItem value="sqlite" label="🗄️ SQLite">
+
+<div>
+
+**Upgrade to SQLite:**
+
+```python
+import sqlite3
+from datetime import datetime
+
+class TestbedDatabase:
+    def __init__(self, db_file="testbed_monitor.db"):
+        self.conn = sqlite3.connect(db_file, check_same_thread=False)
+        self.conn.row_factory = sqlite3.Row
+        self.init_database()
+
+    def init_database(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS testbeds (
+                id INTEGER PRIMARY KEY,
+                testbed_name TEXT NOT NULL,
+                status TEXT DEFAULT 'available',
+                user_email TEXT,
+                user_name TEXT,
+                registered_time TEXT,
+                purpose TEXT,
+                expected_release_time TEXT
+            )
+        ''')
+
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_status
+            ON testbeds(status)
+        ''')
+
+        self.conn.commit()
+
+    def get_available_testbeds(self):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT * FROM testbeds WHERE status = 'available'"
+        )
+        return [dict(row) for row in cursor.fetchall()]
+
+    def register_testbed(self, testbed_id, user_email, user_name,
+                        purpose, release_time):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            UPDATE testbeds
+            SET status = 'in_use',
+                user_email = ?,
+                user_name = ?,
+                registered_time = ?,
+                purpose = ?,
+                expected_release_time = ?
+            WHERE id = ?
+        ''', (user_email, user_name, datetime.utcnow().isoformat(),
+              purpose, release_time, testbed_id))
+
+        self.conn.commit()
+        return cursor.rowcount > 0
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="postgresql" label="🐘 PostgreSQL">
+
+<div>
+
+**Production-Grade PostgreSQL:**
+
+```python
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
+
+class TestbedDatabase:
+    def __init__(self, connection_string):
+        self.conn_string = connection_string
+        self.init_database()
+
+    @contextmanager
+    def get_cursor(self):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        try:
+            yield cursor
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            cursor.close()
+            conn.close()
+
+    def init_database(self):
+        with self.get_cursor() as cursor:
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS testbeds (
+                    id SERIAL PRIMARY KEY,
+                    testbed_name VARCHAR(100) NOT NULL,
+                    status VARCHAR(20) DEFAULT 'available',
+                    user_email VARCHAR(255),
+                    user_name VARCHAR(255),
+                    registered_time TIMESTAMP,
+                    purpose TEXT,
+                    expected_release_time TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    updated_at TIMESTAMP DEFAULT NOW()
+                )
+            ''')
+
+            cursor.execute('''
+                CREATE INDEX IF NOT EXISTS idx_testbed_status
+                ON testbeds(status)
+            ''')
+
+            cursor.execute('''
+                CREATE INDEX IF NOT EXISTS idx_user_email
+                ON testbeds(user_email)
+            ''')
+
+    def get_testbed_history(self, testbed_id, limit=10):
+        with self.get_cursor() as cursor:
+            cursor.execute('''
+                SELECT user_name, registered_time,
+                       expected_release_time, purpose
+                FROM testbed_history
+                WHERE testbed_id = %s
+                ORDER BY registered_time DESC
+                LIMIT %s
+            ''', (testbed_id, limit))
+            return cursor.fetchall()
+```
+
+**Connection String:**
+```python
+# .env file
+DATABASE_URL=postgresql://user:password@localhost:5432/testbed_db
+```
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+## 🐛 Troubleshooting
+
+<InfoCard title="Common Issues & Solutions" icon="🔧" color="#4ecdc4">
+
+<div>
+
+### Bot Not Responding
+
+**Symptoms:**
+- Bot appears online but doesn't reply
+- Commands are ignored
+- No error messages
+
+**Solutions:**
+
+<TroubleshootBot />
+
+</div>
+
+</InfoCard>
+
+### Debug Mode
+
+Enable detailed logging for troubleshooting:
+
+<CodeBlock language="python" title="debug_bot.py">
+{`import logging
+import os
+from webex_bot.webex_bot import WebexBot
+
+# Enable DEBUG logging for all components
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Enable webex_bot specific debug logs
+logging.getLogger('webex_bot').setLevel(logging.DEBUG)
+logging.getLogger('webexpythonsdk').setLevel(logging.DEBUG)
+logging.getLogger('websockets').setLevel(logging.DEBUG)
+
+# Start bot with debug info
+bot = WebexBot(
+    teams_bot_token=os.getenv("WEBEX_ACCESS_TOKEN"),
+    bot_name="Testbed Monitor (DEBUG)",
+    include_demo_commands=True  # Include demo commands for testing
+)
+
+bot.run()`}
+</CodeBlock>
+
+### Health Check Endpoint
+
+Add health monitoring:
+
+<CodeBlock language="python" title="health_check.py" showLineNumbers>
+{`from datetime import datetime
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    bot_status = {
+        'started_at': datetime.utcnow().isoformat(),
+        'last_message': None,
+        'websocket_connected': False,
+        'messages_processed': 0
+    }
+
+    def do_GET(self):
+        if self.path == '/health':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+
+            status = {
+                'status': 'healthy' if self.bot_status['websocket_connected'] else 'unhealthy',
+                'uptime': (datetime.utcnow() - datetime.fromisoformat(
+                    self.bot_status['started_at']
+                )).total_seconds(),
+                **self.bot_status
+            }
+
+            self.wfile.write(json.dumps(status, indent=2).encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def log_message(self, format, *args):
+        pass  # Suppress HTTP logs
+
+def start_health_server(port=8080):
+    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    print(f"✅ Health check server started on port {port}")
+    return server
+
+# In your main bot script:
+# health_server = start_health_server(8080)
+# bot.run()`}
+</CodeBlock>
+
+Test health endpoint:
+```bash
+curl http://localhost:8080/health
+```
+
+## 📊 Monitoring & Analytics
+
+### Usage Statistics
+
+Track bot usage with metrics:
+
+<BotAnalytics />
+
+## 🎓 Best Practices
+
+<FeatureGrid>
+  <InfoCard title="Security" icon="🔒" color="#ff6b6b">
+
+<div>
+
+**Never commit sensitive data:**
+- Use `.env` files
+- Add `.env` to `.gitignore`
+- Use secret management tools
+- Rotate tokens regularly
+- Implement rate limiting
+
+</div>
+
+  </InfoCard>
+
+  <InfoCard title="Error Handling" icon="🛡️" color="#667eea">
+
+<div>
+
+**Robust error handling:**
+- Try-except blocks everywhere
+- Log all errors with context
+- Graceful degradation
+- User-friendly error messages
+- Automatic retry logic
+
+</div>
+
+  </InfoCard>
+
+  <InfoCard title="Performance" icon="⚡" color="#25c2a0">
+
+<div>
+
+**Optimize for speed:**
+- Cache frequently used data
+- Async operations where possible
+- Database indexing
+- Minimize card complexity
+- Connection pooling
+
+</div>
+
+  </InfoCard>
+
+  <InfoCard title="Monitoring" icon="📊" color="#4ecdc4">
+
+<div>
+
+**Track everything:**
+- Command usage metrics
+- Response times
+- Error rates
+- User engagement
+- Resource utilization
+
+</div>
+
+  </InfoCard>
+</FeatureGrid>
+
+## 🚀 Next Steps & Enhancements
+
+<Tabs>
+  <TabItem value="features" label="🎯 Feature Ideas" default>
+
+<div>
+
+**Potential Enhancements:**
+
+1. **📅 Calendar Integration**
+   - Sync with Google Calendar/Outlook
+   - Automated scheduling
+   - Conflict detection
+   - Reminder notifications
+
+2. **📧 Email Notifications**
+   - Release reminders
+   - Overdue alerts
+   - Weekly summary reports
+   - Team digests
+
+3. **🤖 AI/ML Features**
+   - Usage pattern analysis
+   - Predictive availability
+   - Smart recommendations
+   - Anomaly detection
+
+4. **📱 Mobile Optimization**
+   - Responsive card designs
+   - Push notifications
+   - Mobile-first UI
+   - Gesture support
+
+5. **🔗 CI/CD Integration**
+   - Jenkins/GitHub Actions hooks
+   - Automated testbed allocation
+   - Pipeline status updates
+   - Test result reporting
+
+</div>
+
+  </TabItem>
+  <TabItem value="integrations" label="🔌 Integrations">
+
+<div>
+
+**Third-Party Integrations:**
+
+**JIRA Integration:**
+```python
+from jira import JIRA
+
+def create_testbed_ticket(testbed_name, user_email, purpose):
+    jira = JIRA('https://company.atlassian.net',
+                basic_auth=('user', 'token'))
+
+    issue = jira.create_issue(
+        project='TESTBED',
+        summary=f'Testbed {testbed_name} in use',
+        description=f'''
+            User: {user_email}
+            Purpose: {purpose}
+            Status: In Use
+        ''',
+        issuetype={'name': 'Task'}
+    )
+    return issue.key
+```
+
+**Slack Integration:**
+```python
+from slack_sdk import WebClient
+
+def notify_slack(testbed_info):
+    client = WebClient(token=os.getenv('SLACK_BOT_TOKEN'))
+
+    client.chat_postMessage(
+        channel='#testbed-alerts',
+        text=f"🔴 {testbed_info['testbed_name']} now in use by {testbed_info['user_name']}"
+    )
+```
+
+**PagerDuty Alerts:**
+```python
+import pypd
+
+def create_pagerduty_alert(testbed_name):
+    pypd.api_key = os.getenv('PAGERDUTY_API_KEY')
+
+    incident = pypd.Incident.create(
+        title=f'Testbed {testbed_name} stuck',
+        service=pypd.Service.find_one(name='Testbed Service'),
+        urgency='high'
+    )
+```
+
+</div>
+
+  </TabItem>
+  <TabItem value="scaling" label="📈 Scaling">
+
+<div>
+
+**Scaling Strategies:**
+
+**Horizontal Scaling:**
+```yaml
+# Kubernetes deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testbed-bot
+spec:
+  replicas: 3  # Multiple bot instances
+  selector:
+    matchLabels:
+      app: testbed-bot
+  template:
+    metadata:
+      labels:
+        app: testbed-bot
+    spec:
+      containers:
+      - name: bot
+        image: testbed-bot:latest
+        env:
+        - name: WEBEX_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: bot-secrets
+              key: token
+```
+
+**Load Balancing:**
+- Use Redis for session management
+- Shared database for state
+- Message queue (RabbitMQ/Kafka)
+- Distributed caching
+
+**High Availability:**
+- Multi-region deployment
+- Database replication
+- Health checks & auto-restart
+- Rolling updates
+
+</div>
+
+  </TabItem>
+</Tabs>
+
+## 📚 Resources & References
+
+<div style={{
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  padding: '30px',
+  borderRadius: '12px',
+  color: 'white',
+  margin: '30px 0',
+}}>
+
+### 🔗 Official Documentation
+
+- [Webex Developer Portal](https://developer.webex.com/) - Create bots and get tokens
+- [Webex Python SDK](https://github.com/WebexCommunity/WebexPythonSDK) - Official Python library
+- [Adaptive Cards Designer](https://adaptivecards.io/designer/) - Design and test cards
+- [webex_bot Framework](https://github.com/fbradyirl/webex_bot) - Bot framework documentation
+
+### 📖 Learning Resources
+
+- [Webex Bot Tutorial Series](https://developer.webex.com/blog/tags/bots) - Official tutorials
+- [Python Async Programming](https://docs.python.org/3/library/asyncio.html) - For advanced features
+- [WebSocket Protocol](https://datatracker.ietf.org/doc/html/rfc6455) - Understanding WebSockets
+- [JSON Database Design](https://www.json.org/) - Data structure best practices
+
+### 🛠️ Tools & Utilities
+
+- [Postman Collection](https://www.postman.com/webex/workspace/webex) - Test Webex APIs
+- [ngrok](https://ngrok.com/) - Temporary public URLs for local testing
+- [Docker Hub](https://hub.docker.com/) - Container images
+- [GitHub Actions](https://github.com/features/actions) - CI/CD automation
+
+</div>
+
+## 🎉 Conclusion
+
+<div style={{
+  textAlign: 'center',
+  padding: '40px 20px',
+  background: 'linear-gradient(135deg, #25c2a0 0%, #667eea 100%)',
+  borderRadius: '15px',
+  color: 'white',
+  margin: '40px 0',
+  boxShadow: '0 10px 30px rgba(37, 194, 160, 0.3)',
+}}>
+  <div style={{fontSize: '4rem', marginBottom: '20px'}}>🎊</div>
+  <h2 style={{margin: '0 0 20px', fontSize: '2.5rem'}}>
+    You're Ready to Build!
+  </h2>
+  <p style={{fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6'}}>
+    You now have everything needed to create a production-ready Webex chatbot for testbed monitoring.
+    Start small, iterate quickly, and scale as needed.
+  </p>
+
+  <div style={{marginTop: '30px', display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap'}}>
+    <a href="https://github.com/ngtanthanh-qc/webexchatbot_sample"
+       target="_blank"
+       rel="noopener noreferrer"
+       style={{
+         backgroundColor: 'white',
+         color: '#667eea',
+         padding: '12px 30px',
+         borderRadius: '8px',
+         textDecoration: 'none',
+         fontWeight: 'bold',
+         fontSize: '1.1rem',
+       }}>
+      📦 Clone Repository
+    </a>
+    <a href="https://developer.webex.com/docs/bots"
+       target="_blank"
+       rel="noopener noreferrer"
+       style={{
+         backgroundColor: 'rgba(255,255,255,0.2)',
+         color: 'white',
+         padding: '12px 30px',
+         borderRadius: '8px',
+         textDecoration: 'none',
+         fontWeight: 'bold',
+         fontSize: '1.1rem',
+         border: '2px solid white',
+       }}>
+      📖 Read More Docs
+    </a>
+  </div>
+</div>
+
+### Key Takeaways
+
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+  gap: '20px',
+  margin: '30px 0',
+}}>
+  {[
+    { icon: '🔌', title: 'WebSocket Magic', desc: 'No webhooks, no public IP, works behind firewalls' },
+    { icon: '🎴', title: 'Rich UI', desc: 'Adaptive Cards provide interactive, beautiful interfaces' },
+    { icon: '📊', title: 'Real-time', desc: 'Instant updates and bidirectional communication' },
+    { icon: '🚀', title: 'Scalable', desc: 'Start simple, scale to enterprise-grade deployments' },
+    { icon: '🔒', title: 'Secure', desc: 'Built-in authentication and authorization' },
+    { icon: '🛠️', title: 'Extensible', desc: 'Easy to add new features and integrations' },
+  ].map((item, idx) => (
+    <div key={idx} style={{
+      padding: '20px',
+      backgroundColor: 'var(--ifm-background-surface-color)',
+      border: '2px solid #667eea',
+      borderRadius: '10px',
+      textAlign: 'center',
+    }}>
+      <div style={{fontSize: '3rem', marginBottom: '10px'}}>{item.icon}</div>
+      <h4 style={{color: '#667eea', margin: '10px 0'}}>{item.title}</h4>
+      <p style={{color: '#666', fontSize: '0.9rem', margin: 0}}>{item.desc}</p>
+    </div>
+  ))}
+</div>
+
+---
+
+<div style={{textAlign: 'center', color: '#666', fontSize: '0.9rem', marginTop: '50px'}}>
+  <p>
+    <strong>Built with ❤️ using Webex, Python, and WebSockets</strong>
+  </p>
+  <p>
+    Questions? Issues? Visit the <a href="https://github.com/ngtanthanh-qc/webexchatbot_sample/issues">GitHub Issues</a> page
+  </p>
+  <p style={{marginTop: '20px'}}>
+    <em>Last updated: October 2025 | Version 1.0</em>
+  </p>
+</div>

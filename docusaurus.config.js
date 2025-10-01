@@ -239,7 +239,12 @@ const config = {
         containerId: 'GTM-W4JDZ33',
       },
     ],
-    'docusaurus-plugin-image-zoom',
+    [
+      'docusaurus-plugin-image-zoom',
+      {
+        selector: '.markdown img:not(.no-zoom)',
+      },
+    ],
   ],
 };
 module.exports = config;
