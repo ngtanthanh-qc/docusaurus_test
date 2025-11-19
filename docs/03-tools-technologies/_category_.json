@@ -1,0 +1,11 @@
+{
+  "label": "🛠️ Tools & Technologies",
+  "position": 3,
+  "description": "Frontend technologies, programming languages, and testing frameworks",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Tools & Technologies"
+  }
+}
