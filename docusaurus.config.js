@@ -15,6 +15,16 @@ const config = {
   favicon: "img/favicon.ico",
   markdown: {
     mermaid: true,
+    // Docusaurus 3.9: control emoji transformation in markdown
+    emoji: true,
+    // Docusaurus 3.9: new hooks for handling broken markdown links/images
+    // (replaces deprecated siteConfig.onBrokenMarkdownLinks)
+    hooks: {
+      onBrokenMarkdownLinks({filePath, link}) {
+        console.warn(`[WARNING] Broken markdown link in ${filePath}: ${link}`);
+        return undefined; // return a fallback URL string, or undefined to keep default behavior
+      },
+    },
   },
   themes: ["@docusaurus/theme-live-codeblock", "@docusaurus/theme-mermaid"],
   // Set the production url of your site here
@@ -29,7 +39,8 @@ const config = {
   projectName: "sharing docs and tips", // Usually your repo name.
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+  // Docusaurus 3.9: onBrokenMarkdownLinks moved to markdown.hooks (see below)
+  // onBrokenMarkdownLinks is deprecated in v3.9, will be removed in v4
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -43,12 +54,15 @@ const config = {
         direction: "ltr",
         htmlLang: "en-US",
         calendar: "gregory",
+        // Docusaurus 3.9: skip translation file lookups for default locale (faster builds)
+        translate: false,
       },
       vi: {
         label: "Tiếng Việt",
         direction: "ltr",
         htmlLang: "vi-VN",
         calendar: "gregory",
+        translate: true,
       },
     },
   },
@@ -197,6 +211,12 @@ const config = {
         indexName: "tanthanh",
         contextualSearch: true,
         searchParameters: {},
+        // DocSearch v4 - Ask AI feature (Docusaurus 3.9+)
+        // To enable: create an AskAI assistant at https://docsearch.algolia.com/docs/v4/askai/
+        // then uncomment and fill in your assistantId below
+        // askAi: {
+        //   assistantId: 'YOUR_ASSISTANT_ID',
+        // },
       },
       mermaid: {
         theme: {
