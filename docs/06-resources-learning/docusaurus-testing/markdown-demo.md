@@ -88,7 +88,7 @@ Horizontal rule below:
 
 ![Docusaurus Logo](/img/logo.svg)
 
-![Alt text with title](/img/docusaurus.png "Docusaurus mascot")
+![Alt text with title](/img/logo.svg "Docusaurus mascot")
 
 ## Code Blocks
 

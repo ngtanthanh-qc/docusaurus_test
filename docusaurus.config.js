@@ -1,6 +1,7 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+const path = require('path');
 const {themes} = require('prism-react-renderer');
 const lightTheme = themes.github;
 const darkTheme = themes.dracula;
@@ -20,8 +21,8 @@ const config = {
     // Docusaurus 3.9: new hooks for handling broken markdown links/images
     // (replaces deprecated siteConfig.onBrokenMarkdownLinks)
     hooks: {
-      onBrokenMarkdownLinks({filePath, link}) {
-        console.warn(`[WARNING] Broken markdown link in ${filePath}: ${link}`);
+      onBrokenMarkdownLinks({sourceFilePath, url}) {
+        console.warn(`[WARNING] Broken markdown link in ${sourceFilePath}: ${url}`);
         return undefined; // return a fallback URL string, or undefined to keep default behavior
       },
     },
@@ -96,6 +97,10 @@ const config = {
         "sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM",
       crossorigin: "anonymous",
     },
+    {
+      href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+      type: "text/css",
+    },
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -103,7 +108,11 @@ const config = {
       // Replace with your project's social card
       image: "img/social-card.jpg",
       navbar: {
-        title: "🏠 Home",
+        title: "Docs-n-Notes",
+        logo: {
+          alt: 'Docs-n-Notes Logo',
+          src: 'img/logo.svg',
+        },
         items: [
           {
             type: "docSidebar",
@@ -119,7 +128,7 @@ const config = {
           },
           {
             href: 'https://tanthanh.dev',
-            label: '📄 Resume',
+            label: 'Resume',
             position: 'right',
             target: '_blank',
           },
@@ -146,48 +155,32 @@ const config = {
       },
       footer: {
         style: "dark",
-        // links: [
-        //   {
-        //     title: 'Docs',
-        //     items: [
-        //       {
-        //         label: 'Tutorial',
-        //         to: '/docs/intro',
-        //       },
-        //     ],
-        //   },
-        //   {
-        //     title: 'Community',
-        //     items: [
-        //       {
-        //         label: 'Stack Overflow',
-        //         href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-        //       },
-        //       {
-        //         label: 'Discord',
-        //         href: 'https://discordapp.com/invite/docusaurus',
-        //       },
-        //       {
-        //         label: 'Twitter',
-        //         href: 'https://twitter.com/docusaurus',
-        //       },
-        //     ],
-        //   },
-        //   {
-        //     title: 'More',
-        //     items: [
-        //       {
-        //         label: 'Blog',
-        //         to: '/blog',
-        //       },
-        //       {
-        //         label: 'GitHub',
-        //         href: 'https://github.com/facebook/docusaurus',
-        //       },
-        //     ],
-        //   },
-        // ],
-        copyright: `Copyright © ${new Date().getFullYear()} Thanh Nguyen. All rights reserved. Built with <a href="https://docusaurus.io" target="_blank">Docusarus</a></a>`,
+        links: [
+          {
+            title: 'Resources',
+            items: [
+              { label: 'Documentation', to: '/docs/intro' },
+              { label: 'Blog', to: '/blog' },
+              { label: 'About Me', to: '/about-me' },
+            ],
+          },
+          {
+            title: 'Topics',
+            items: [
+              { label: 'Test Automation', to: '/docs/test-automation/intro' },
+              { label: 'AI/ML & Agents', to: '/docs/ai-ml-agents/intro' },
+              { label: 'Networking', to: '/docs/networking/intro' },
+            ],
+          },
+          {
+            title: 'Connect',
+            items: [
+              { label: 'GitHub', href: 'https://github.com/ngtanthanh-qc' },
+              { label: 'Resume', href: 'https://tanthanh.dev' },
+            ],
+          },
+        ],
+        copyright: `Copyright © ${new Date().getFullYear()} Thanh Nguyen. Built with <a href="https://docusaurus.io" target="_blank">Docusaurus</a>`,
       },
       prism: {
         theme: lightTheme,
@@ -284,6 +277,7 @@ const config = {
       },
     }),
   plugins: [
+    path.resolve(__dirname, 'plugins/recent-blog-posts.js'),
     [
       "docusaurus-plugin-dotenv",
       {
@@ -308,6 +302,16 @@ const config = {
       'docusaurus-plugin-image-zoom',
       {
         selector: '.markdown img:not(.no-zoom)',
+      },
+    ],
+    [
+      '@docusaurus/plugin-ideal-image',
+      {
+        quality: 70,
+        max: 1030,
+        min: 640,
+        steps: 2,
+        disableInDev: false,
       },
     ],
   ],

@@ -1,21 +1,22 @@
 import React from 'react';
 import clsx from 'clsx';
+import { Crosshair, BrainCircuit, Network, type LucideIcon } from 'lucide-react';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  icon: string;
-  description: JSX.Element;
+  Icon: LucideIcon;
+  description: React.ReactElement;
   gradient: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'SDET Expertise',
-    icon: '🎯',
+    Icon: Crosshair,
     description: (
       <>
-        Software Development Engineer in Test with expertise in API testing, 
+        Software Development Engineer in Test with expertise in API testing,
         web automation, CI/CD pipelines, and test framework development.
       </>
     ),
@@ -23,10 +24,10 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'AI/ML Innovation',
-    icon: '🤖',
+    Icon: BrainCircuit,
     description: (
       <>
-        Exploring AI agents, MCP servers, LLM integration, and building 
+        Exploring AI agents, MCP servers, LLM integration, and building
         intelligent automation systems for next-generation testing.
       </>
     ),
@@ -34,10 +35,10 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Network Automation',
-    icon: '🌐',
+    Icon: Network,
     description: (
       <>
-        Cisco technologies, pyATS framework, 802.1X authentication, 
+        Cisco technologies, pyATS framework, 802.1X authentication,
         and enterprise networking solutions with automation focus.
       </>
     ),
@@ -45,12 +46,12 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, icon, description, gradient}: FeatureItem) {
+function Feature({title, Icon, description, gradient}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className={styles.featureCard}>
         <div className={styles.iconWrapper} style={{background: gradient}}>
-          <span className={styles.icon}>{icon}</span>
+          <Icon size={48} strokeWidth={1.5} color="white" />
         </div>
         <div className="text--center padding-horiz--md">
           <h3 className={styles.featureTitle}>{title}</h3>
@@ -61,7 +62,7 @@ function Feature({title, icon, description, gradient}: FeatureItem) {
   );
 }
 
-export default function HomepageFeatures(): JSX.Element {
+export default function HomepageFeatures(): React.ReactElement {
   return (
     <section className={styles.features}>
       <div className="container">

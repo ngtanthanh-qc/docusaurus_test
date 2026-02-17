@@ -17,10 +17,10 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   
   /* Custom colors for modern design */
-  --ifm-hero-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --ifm-background-surface-color: #f8f9fa;
-  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Ubuntu', sans-serif;
+  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   --ifm-heading-font-family: var(--ifm-font-family-base);
+  --ifm-font-family-monospace: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --ifm-font-weight-bold: 600;
   --ifm-heading-font-weight: 700;
   
@@ -53,7 +53,6 @@
   --ifm-background-color: #0f172a;
   --ifm-background-surface-color: #1e293b;
   --ifm-card-background-color: #1e293b;
-  --ifm-hero-background-color: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
 .code-block-error-line {
@@ -64,8 +63,14 @@
   border-left: 3px solid #ff000080;
 }
 
-/* Global enhancements */
-* {
+/* Smooth transitions for interactive elements only */
+a,
+.button,
+.card,
+.navbar,
+.navbar__link,
+.menu__link,
+.table-of-contents__link {
   transition: color var(--ifm-transition-fast) var(--ifm-transition-timing),
               background-color var(--ifm-transition-fast) var(--ifm-transition-timing),
               border-color var(--ifm-transition-fast) var(--ifm-transition-timing);
@@ -153,39 +158,14 @@
 }
 
 .navbar__title {
-  font-weight: 800;
-  font-size: 1.4rem;
-  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, #4facfe 50%, var(--ifm-color-primary-dark) 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  transition: all 0.3s ease;
-  animation: gradientShift 3s ease-in-out infinite;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--ifm-color-primary);
+  letter-spacing: 0.3px;
 }
 
 [data-theme='dark'] .navbar__title {
-  background: linear-gradient(135deg, #818cf8 0%, #06b6d4 50%, #6366f1 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 3s ease-in-out infinite;
-}
-
-.navbar__title:hover {
-  transform: scale(1.08);
-  animation-duration: 1s;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  color: var(--ifm-color-primary-light);
 }
 
 

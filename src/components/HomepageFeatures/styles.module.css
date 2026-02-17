@@ -93,11 +93,6 @@
   transform: translateY(0);
 }
 
-.icon {
-  font-size: 3rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
 .featureTitle {
   font-size: 1.5rem;
   font-weight: 600;
@@ -109,11 +104,6 @@
   font-size: 1rem;
   line-height: 1.6;
   color: var(--ifm-color-emphasis-800);
-}
-
-.featureSvg {
-  height: 200px;
-  width: 200px;
 }
 
 [data-theme='dark'] .iconWrapper {
