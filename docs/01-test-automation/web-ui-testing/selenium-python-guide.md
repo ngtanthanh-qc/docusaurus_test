@@ -242,9 +242,9 @@ driver.switch_to.default_content()
 
 ## 🎓 Next Steps
 
-- [Robot Framework Guide](./robot-framework-guide)
-- [Appium Mobile Testing](./appium-mobile-testing)
-- [Visual Testing Strategies](./visual-testing)
+- Robot Framework Guide *(coming soon)*
+- Appium Mobile Testing *(coming soon)*
+- Visual Testing Strategies *(coming soon)*
 
 ---
 

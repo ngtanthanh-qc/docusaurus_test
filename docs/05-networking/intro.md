@@ -218,10 +218,10 @@ show cdp neighbors
 
 ## 🎓 Explore Our Guides
 
-- 🤖 **[Network Automation with pyATS](./automation-pyats)** - Complete automation guide
+- 🤖 **[Network Automation with pyATS](./automation-pyats/automation_pyATS_setup_guide)** - Complete automation guide
 - 🔐 **[802.1X Authentication](./networking/802.1X%20Authenticaion/describing%20802.1X%20Authentication)** - Security implementation
-- 📡 **[SDA Wireless](./networking/SDA/sda-wireless-design-deploy)** - Software defined access
-- 📚 **[CCNA Topics](./networking/CCNA)** - Certification preparation
+- 📡 **[SDA Wireless](/docs/sda/wireless-under-the-hood)** - Software defined access
+- 📚 **[CCNA Topics](/docs/category/ccna)** - Certification preparation
 
 ---
 

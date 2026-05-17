@@ -268,9 +268,9 @@ describe('Echo Server', () => {
 
 ## 🎓 Next Steps
 
-- [Advanced MCP Tools](./mcp-advanced-tools)
-- [MCP Security Best Practices](./mcp-security)
-- [Building AI Agents with MCP](../ai-agents-agentics/agents-with-mcp)
+- Advanced MCP Tools *(coming soon)*
+- MCP Security Best Practices *(coming soon)*
+- Building AI Agents with MCP *(coming soon)*
 
 ---
 

@@ -25,11 +25,11 @@ Curated tools, libraries, learning paths, and industry best practices to acceler
 
 Choose your learning path:
 
-- 🎯 **New to Test Automation?** → Start with [Test Automation Intro](./01-test-automation/intro)
-- 🤖 **Interested in AI Agents?** → Explore [AI/ML & Agents](./02-ai-ml-agents/intro) 
-- 🔄 **Building CI/CD Pipelines?** → Check out [Jenkins Guide](./04-cicd-devops/jenkins/jenkins-test-automation-pipeline)
-- 🌐 **Working with Networks?** → Visit [Networking Section](./05-networking)
-- 📚 **Looking for Tools?** → Browse [Resources & Learning](./06-resources-learning/intro)
+- 🎯 **New to Test Automation?** → Start with [Test Automation Intro](./test-automation/intro)
+- 🤖 **Interested in AI Agents?** → Explore [AI/ML & Agents](./ai-ml-agents/intro) 
+- 🔄 **Building CI/CD Pipelines?** → Check out [Jenkins Guide](./cicd-devops/jenkins/jenkins-test-automation-pipeline)
+- 🌐 **Working with Networks?** → Visit [Networking Section](./networking/intro)
+- 📚 **Looking for Tools?** → Browse [Resources & Learning](./resources-learning/intro)
 
 ## 💡 Background
 

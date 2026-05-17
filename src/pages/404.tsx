@@ -27,10 +27,10 @@ export default function NotFound(): JSX.Element {
   }, []);
 
   const suggestions = [
-    { icon: '🎯', text: 'Test Automation', link: '/docs/01-test-automation/intro' },
-    { icon: '🤖', text: 'AI/ML & Agents', link: '/docs/02-ai-ml-agents/intro' },
-    { icon: '🔄', text: 'CI/CD & DevOps', link: '/docs/04-cicd-devops/jenkins/jenkins-test-automation-pipeline' },
-    { icon: '🌐', text: 'Networking', link: '/docs/05-networking' },
+    { icon: '🎯', text: 'Test Automation', link: '/docs/test-automation/intro' },
+    { icon: '🤖', text: 'AI/ML & Agents', link: '/docs/ai-ml-agents/intro' },
+    { icon: '🔄', text: 'CI/CD & DevOps', link: '/docs/cicd-devops/jenkins/jenkins-test-automation-pipeline' },
+    { icon: '🌐', text: 'Networking', link: '/docs/networking/intro' },
   ];
 
   const funnyMessages = [

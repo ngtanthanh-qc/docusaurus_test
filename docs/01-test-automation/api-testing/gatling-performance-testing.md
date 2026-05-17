@@ -160,9 +160,9 @@ val httpProtocol = http
 
 ## 🎓 Next Steps
 
-- [Karate + Gatling Integration](./karate-gatling-integration)
-- [API Security Testing](./api-security-testing)
-- [CI/CD Performance Testing](../cicd-devops/performance-cicd)
+- Karate + Gatling Integration *(coming soon)*
+- API Security Testing *(coming soon)*
+- CI/CD Performance Testing *(coming soon)*
 
 ---
 

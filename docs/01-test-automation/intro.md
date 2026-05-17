@@ -25,9 +25,9 @@ Welcome to the **Test Automation** section! This comprehensive guide covers ever
 
 Choose your area of interest:
 
-- 📡 **[API Testing](./api-testing)** - Start with API automation
-- 🌐 **[Web/UI Testing](./web-ui-testing)** - Learn browser automation  
-- 📝 **[BDD & Test Design](./bdd-test-design)** - Master test design patterns
+- 📡 **[API Testing](./api-testing/karate-getting-started)** - Start with API automation
+- 🌐 **[Web/UI Testing](./web-ui-testing/selenium-python-guide)** - Learn browser automation  
+- 📝 **BDD & Test Design** - Master test design patterns *(coming soon)*
 
 ## 🔧 Prerequisites
 

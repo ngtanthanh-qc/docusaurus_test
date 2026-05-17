@@ -53,10 +53,10 @@ Welcome to the **AI/ML & Agents** section! Dive into the world of artificial int
 
 Choose your path:
 
-- 🔌 **[MCP Server](./mcp-server)** - Start with Model Context Protocol
-- 🤝 **[AI Agents & Agentics](./ai-agents-agentics)** - Learn agent fundamentals  
-- ⚙️ **[Agent Development](./agent-development)** - Build custom agents
-- 🧠 **[Machine Learning](./machine-learning)** - ML integration basics
+- 🔌 **[MCP Server](./mcp-server/mcp-introduction)** - Start with Model Context Protocol
+- 🤝 **AI Agents & Agentics** - Learn agent fundamentals *(coming soon)*
+- ⚙️ **Agent Development** - Build custom agents *(coming soon)*
+- 🧠 **Machine Learning** - ML integration basics *(coming soon)*
 
 ## 📚 Prerequisites
 

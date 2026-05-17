@@ -112,8 +112,8 @@ target/karate-reports/karate-summary.html
 
 ## 🎓 Next Steps
 
-- [Advanced Karate Features](./karate-advanced)
-- [API Security Testing](./api-security-testing)
+- Advanced Karate Features *(coming soon)*
+- API Security Testing *(coming soon)*
 - [Performance Testing with Gatling](./gatling-performance-testing)
 
 ---

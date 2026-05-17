@@ -155,8 +155,8 @@ Key metrics to track:
 Explore our detailed guides:
 
 - 🔧 **[Jenkins Pipelines](./jenkins/jenkins-test-automation-pipeline)** - Complete Jenkins guide
-- 🐳 **[Docker & Containers](./deployment)** - Container orchestration
-- 📦 **[Version Control](./version-control)** - Git best practices
+- 🐳 **Docker & Containers** - Container orchestration *(coming soon)*
+- 📦 **Version Control** - Git best practices *(coming soon)*
 
 ---
 

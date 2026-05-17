@@ -458,9 +458,9 @@ stage('Setup Test Data') {
 
 ## 🎓 Next Steps
 
-- [Advanced Jenkins Configuration](./jenkins-advanced-config)
-- [Jenkins with Docker](./jenkins-docker-integration)
-- [Scaling Jenkins for Large Teams](./jenkins-scaling)
+- Advanced Jenkins Configuration *(coming soon)*
+- Jenkins with Docker *(coming soon)*
+- Scaling Jenkins for Large Teams *(coming soon)*
 
 ---
 

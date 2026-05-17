@@ -25,11 +25,11 @@ Các công cụ, thư viện, lộ trình học tập được tuyển chọn v�
 
 Chọn lộ trình học tập của bạn:
 
-- 🎯 **Mới với Kiểm thử Tự động?** → Bắt đầu với [Giới thiệu Kiểm thử Tự động](./01-test-automation/intro)
-- 🤖 **Quan tâm đến AI Agents?** → Khám phá [AI/ML & Agents](./02-ai-ml-agents/intro) 
-- 🔄 **Xây dựng CI/CD Pipelines?** → Xem [Hướng dẫn Jenkins](./04-cicd-devops/jenkins/jenkins-test-automation-pipeline)
-- 🌐 **Làm việc với Mạng?** → Ghé thăm [Phần Mạng](./05-networking)
-- 📚 **Tìm kiếm Công cụ?** → Duyệt [Tài nguyên & Học tập](./06-resources-learning/intro)
+- 🎯 **Mới với Kiểm thử Tự động?** → Bắt đầu với [Giới thiệu Kiểm thử Tự động](./test-automation/intro)
+- 🤖 **Quan tâm đến AI Agents?** → Khám phá [AI/ML & Agents](./ai-ml-agents/intro) 
+- 🔄 **Xây dựng CI/CD Pipelines?** → Xem [Hướng dẫn Jenkins](./cicd-devops/jenkins/jenkins-test-automation-pipeline)
+- 🌐 **Làm việc với Mạng?** → Ghé thăm [Phần Mạng](./networking/intro)
+- 📚 **Tìm kiếm Công cụ?** → Duyệt [Tài nguyên & Học tập](./resources-learning/intro)
 
 ---
 
