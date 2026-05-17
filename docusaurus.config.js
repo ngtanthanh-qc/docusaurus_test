@@ -279,13 +279,6 @@ const config = {
   plugins: [
     path.resolve(__dirname, 'plugins/recent-blog-posts.js'),
     [
-      "docusaurus-plugin-dotenv",
-      {
-        path: "./.env.local",
-        systemvars: true,
-      },
-    ],
-    [
       '@docusaurus/plugin-google-gtag',
       {
         trackingID: 'G-0RYVLZ03TQ',
