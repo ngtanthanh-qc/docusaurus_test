@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Docusaurus v3 documentation website with Firebase authentication integration. The project is a technical blog and documentation site with protected content areas.
+This is a Docusaurus v3 documentation website used as Anthony's personal knowledge base, technical blog, and learning log. The site is fully public — no authentication.
 
 ## Development Commands
 
@@ -37,8 +37,7 @@ npm run clear
 ## Architecture
 
 ### Core Technologies
-- **Docusaurus 3.0.0**: Static site generator for documentation
-- **Firebase**: Authentication and cloud functions
+- **Docusaurus 3.9+**: Static site generator for documentation
 - **React 18**: UI framework
 - **TypeScript**: Type safety for components
 
@@ -49,57 +48,42 @@ npm run clear
   - `/networking/` - Networking documentation (802.1X, CCNA, SDA)
 - `/blog/` - Blog posts with MDX support
 - `/src/` - Source code
-  - `/components/Auth/` - Firebase authentication wrapper
-  - `/theme/` - Docusaurus theme customizations
+  - `/components/` - Custom React components (Highlight, HomepageFeatures)
   - `/pages/` - Custom React pages
-- `/functions/` - Firebase cloud functions
+  - `/css/` - Global styles
+- `/plugins/` - Custom Docusaurus plugins (e.g. recent-blog-posts)
 - `/static/` - Static assets (images, favicons)
+- `/i18n/` - Translations (en, vi)
 
 ### Key Features
 
-1. **Authentication System**: Firebase-based authentication with protected paths (see `src/components/Auth/index.js`)
-2. **Search**: Algolia DocSearch integration configured in `docusaurus.config.js`
-3. **Live Code Blocks**: Interactive code editor support via `@docusaurus/theme-live-codeblock`
-4. **Mermaid Diagrams**: Built-in support for technical diagrams
-5. **Math Support**: KaTeX for mathematical expressions in blog posts
-6. **Image Zoom**: Plugin enabled for detailed image viewing
+1. **Search**: Algolia DocSearch v4 with Ask AI (assistant via Agent Studio) in `docusaurus.config.js`
+2. **Live Code Blocks**: Interactive code editor via `@docusaurus/theme-live-codeblock`
+3. **Mermaid Diagrams**: Built-in support for technical diagrams
+4. **Math Support**: KaTeX for mathematical expressions in blog posts
+5. **Image Zoom**: Plugin enabled for detailed image viewing
+6. **i18n**: English + Vietnamese locales
 
 ### Configuration Files
 
 - `docusaurus.config.js`: Main configuration (site metadata, plugins, themes)
 - `sidebars.js`: Documentation sidebar structure (auto-generated from filesystem)
-- `firebase.json`: Firebase functions configuration
 - `tsconfig.json`: TypeScript configuration
-
-### Authentication Flow
-
-The site uses a custom authentication wrapper (`src/theme/Root.js`) that:
-1. Checks authentication state on all routes
-2. Protects specific paths defined in `PROTECTED_PATHS`
-3. Handles login/logout redirects
-4. Shows loading state during auth verification
-
-### Environment Variables
-
-Uses `docusaurus-plugin-dotenv` to load from `.env.local` for Firebase configuration and other sensitive settings.
 
 ## Node Version Requirement
 
-Requires Node.js >= 20.0 (Updated for Vercel deployment compatibility)
+Requires Node.js >= 20.0 (works on Node 25 with `engines: ">=20.0"` if EBADENGINE warnings are not desired).
 
-## Recent Updates
+## Site Purpose & Design Direction
 
-- **Docusaurus**: Upgraded to v3.8.1 (latest stable)
-- **Firebase**: Updated to v10.14.1 with custom authentication implementation
-- **Dependencies**: All major dependencies updated to latest versions
-- **Authentication**: Removed react-firebaseui dependency, implemented custom login component
-- **Build**: Compatible with Vercel deployment
+Public site for sharing knowledge, blog posts, and learning notes. Inspiration for UI/UX improvements: https://docusaurus.io/showcase — aim for a polished, distinctive theme that reflects a personal brand (Senior QC Engineer, automation focus).
 
-## Firebase Setup
+## Accepted Security Findings
 
-1. Copy `.env.local.example` to `.env.local`
-2. Add your Firebase credentials
-3. Authentication is optional - site will work without Firebase config
-- to memoerize 
-tham khaảo 1 số showcase: https://docusaurus.io/showcase
-caải tieêến phaần thieêết kế, GUI, UI cuủa trang web này cuủa toôi. minuục điích cuủa trang web naày duùng dđể sharing knowledge, block, và learning cuủa toôi.
+Reviewed via `osv-scanner` and accepted (do not flag in routine audits):
+
+- **`serialize-javascript@6.0.2`** — transitive via `webpack` → `terser-webpack-plugin` / `css-minimizer-webpack-plugin`.
+  - GHSA-5c6j-r48x-rmvq (CVSS 8.1 High, XSS) + GHSA-qj8w-gfj5-8c6v (CVSS 5.9 Medium).
+  - Fix requires major bump to 7.x which webpack's transitive chain does not accept under `npm audit fix` (no `--force`).
+  - **Risk accepted**: dev/build-only — `serialize-javascript` is invoked by webpack/terser in the Node build process to serialize trusted chunks. No untrusted input path. The XSS vector requires attacker-controlled serialized payloads, which never occurs in this static-site build pipeline.
+  - Re-evaluate if Docusaurus bumps to a webpack version that pulls `serialize-javascript@7+`.
