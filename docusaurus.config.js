@@ -205,11 +205,13 @@ const config = {
         contextualSearch: true,
         searchParameters: {},
         // DocSearch v4 - Ask AI feature (Docusaurus 3.9+)
-        // To enable: create an AskAI assistant at https://docsearch.algolia.com/docs/v4/askai/
-        // then uncomment and fill in your assistantId below
-        // askAi: {
-        //   assistantId: 'YOUR_ASSISTANT_ID',
-        // },
+        // Assistant created via Algolia Agent Studio.
+        // Ask AI requires its own apiKey scoped with the Ask AI ACL;
+        // the top-level search apiKey above is search-only.
+        askAi: {
+          assistantId: 'b4037d80-c498-46e1-9e27-50c08de336c7',
+          apiKey: '247f2c5d258428a9ec0ab1ab6e1f66c6',
+        },
       },
       mermaid: {
         theme: {
