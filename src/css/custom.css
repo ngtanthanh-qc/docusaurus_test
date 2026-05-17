@@ -210,13 +210,9 @@ pre {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Improved footer */
-.footer {
-  background: linear-gradient(180deg, 
-    var(--ifm-background-surface-color) 0%, 
-    var(--ifm-background-color) 100%);
-}
-
+/* Footer — let `footer.style: "dark"` in docusaurus.config.js drive the
+   background. Previously this rule forced a LIGHT gradient bg which made
+   the dark-style light text invisible against it. */
 .footer__title {
   font-weight: 700;
   font-size: 1.1rem;
